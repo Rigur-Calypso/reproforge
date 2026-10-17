@@ -1,0 +1,7 @@
+FROM python:3.8-slim
+
+RUN pip install --no-cache-dir MarkupSafe==1.1.1 pytest==8.0.2 pytest-timeout==2.3.1 \
+    && mkdir -p /opt/reproforge /candidate
+
+WORKDIR /workspace
+USER 65532:65532

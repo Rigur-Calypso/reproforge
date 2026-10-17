@@ -1,0 +1,21 @@
+{
+  "case_id": "pallets-jinja-1362",
+  "issue_url": "https://github.com/pallets/jinja/issues/1362",
+  "repository_url": "https://github.com/pallets/jinja.git",
+  "summary": "Async support does not work with NativeEnvironment when rendering a list.",
+  "issue_text": "When enable_async=True is used with NativeEnvironment, calling render_async with a list raises TypeError: sequence item 0: expected str instance, list found. Synchronous render returns the list as expected. The reproducer calls env.from_string('{{ items }}').render_async(items=[1, 2, 3, 4, 5, 6, 7, 8, 9]).",
+  "traceback_excerpt": "jinja2/asyncsupport.py, in concat_async: return concat(rv); TypeError: sequence item 0: expected str instance, list found.",
+  "expected_exception": "TypeError",
+  "message_pattern": "expected str instance, list found",
+  "reported_functions": ["concat_async"],
+  "package_name": "jinja2",
+  "repo_roots": ["src/jinja2", "jinja2"],
+  "import_paths": ["src"],
+  "context_files": ["src/jinja2/asyncsupport.py", "src/jinja2/nativetypes.py"],
+  "affected_ref": "2.11.3",
+  "fixed_ref": "59de6fbde98de6719758b773a77f0559756756b5",
+  "python_version": "3.8",
+  "worker_image": "reproforge-worker:py38",
+  "dependency_note": "Requires Python 3.8 and MarkupSafe==1.1.1; older Jinja 2.11.x uses soft_unicode which was removed in MarkupSafe 2.1+ and Python 3.10+.",
+  "fix_reference": "https://github.com/pallets/jinja/pull/1363"
+}

@@ -92,6 +92,27 @@ A comprehensive unit test suite in `tests/test_verifier.py` (20 tests) verifies 
 
 2. **Execution Environment Note:** This run used `host-unsafe` because Docker Desktop was unavailable on the evaluation workstation. The Docker container isolation configuration (`--network none`, `--read-only`, dropped capabilities) is provided in `worker/` and `runner.py`.
 
+## Curated Evaluation Cases
+
+ReproForge benchmarks differential reproduction across distinct environments:
+
+1. **Click #3449 ([`evals/cases/click-3449.json`](evals/cases/click-3449.json)):**
+   - **Target:** Pallets Click (8.4.0 vs fix commit `4df304c`)
+   - **Environment:** Python 3.13 (`reproforge-worker:py313`)
+   - **Failure signature:** `ValueError: I/O operation on closed file.` in `src/click/testing.py:invoke`
+   - **Status:** Synthesized by model on attempt 1 and differentially verified (`artifacts/pallets-click-3449/`).
+
+2. **Jinja #1362 ([`evals/cases/jinja-1362.json`](evals/cases/jinja-1362.json)):**
+   - **Target:** Pallets Jinja (2.11.3 vs fix PR #1363, commit `59de6fb`)
+   - **Environment:** Python 3.8 (`worker/Dockerfile.py38`), pinned `MarkupSafe==1.1.1`
+   - **Failure signature:** `TypeError: sequence item 0: expected str instance, list found` in `jinja2/asyncsupport.py:concat_async`
+   - **Reproducer:** [`evals/reproductions/jinja_1362.py`](evals/reproductions/jinja_1362.py)
+   - **Significance:** Demonstrates ReproForge's environment pinning requirements—older Jinja releases rely on APIs removed in modern Python/MarkupSafe.
+
+3. **MarkupSafe #472 ([`check_markupsafe.py`](check_markupsafe.py) - Boundary Study):**
+   - **Target:** Pallets MarkupSafe (3.0.1 vs 3.0.2)
+   - **Significance:** Demonstrates the verifier's strict repository-frame guardrail. Because the crash occurs inside compiled C code (`_speedups.c`) without emitting a Python frame, ReproForge's verifier refuses to certify it, highlighting the boundary of pure-Python traceback analysis.
+
 ## DigitalOcean
 
 The worker is designed to run in a disposable container on a DigitalOcean Droplet. The deployment is not complete yet. Model calls run from the orchestrator, using either Gemini or the optional DigitalOcean Inference endpoint.
@@ -100,6 +121,8 @@ The worker is designed to run in a disposable container on a DigitalOcean Drople
 
 - [Architecture and reproduction workflow](docs/design.md)
 - [Click issue case manifest](evals/cases/click-3449.json)
+- [Jinja issue case manifest](evals/cases/jinja-1362.json)
+- [MarkupSafe boundary validation script](check_markupsafe.py)
 
 ## License
 
