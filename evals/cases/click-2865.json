@@ -1,0 +1,19 @@
+{
+  "case_id": "pallets-click-2865",
+  "issue_url": "https://github.com/pallets/click/issues/2865",
+  "repository_url": "https://github.com/pallets/click.git",
+  "summary": "CliRunner terminates with io.UnsupportedOperation when using faulthandler.",
+  "issue_text": "The output redirection for CliRunner doesn't play nicely with Python's faulthandler library. When faulthandler.enable() is called within a Click command invoked by CliRunner(catch_exceptions=False), it terminates prematurely with io.UnsupportedOperation: fileno. On Click 8.3.3 and later, CliRunner exposes the underlying fileno so faulthandler succeeds.",
+  "traceback_excerpt": "click/testing.py, in invoke: return_value = cli.main(); io.UnsupportedOperation: fileno",
+  "expected_exception": "UnsupportedOperation",
+  "message_pattern": "fileno",
+  "reported_functions": ["invoke"],
+  "package_name": "click",
+  "repo_roots": ["src/click"],
+  "import_paths": ["src"],
+  "context_files": ["src/click/testing.py", "src/click/core.py"],
+  "affected_ref": "8.1.7",
+  "fixed_ref": "8.3.3",
+  "python_version": "3.13",
+  "fix_reference": "https://github.com/pallets/click/pull/3244"
+}
