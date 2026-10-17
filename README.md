@@ -66,94 +66,80 @@ All cases have been executed and **differentially verified** in isolated Docker 
 
 ---
 
-## Quick Start
+## Getting Started: 4 Scenarios on How to Run
 
-Get up and running in 2 minutes:
-
-### 1. Setup
+### Initial Setup (Common to All Scenarios)
 ```bash
 git clone https://github.com/Rigur-Calypso/reproforge.git && cd reproforge
 python3 -m venv .venv && source .venv/bin/activate && pip install -e '.[dev]'
-pytest tests/ -v   # runs the 20-test AST verifier suite
+pytest tests/ -v   # runs the 20-test AST verifier integrity suite
 ```
 
-### 2. Run a Reproduction in Docker
-Build the worker image and execute the HTTPX open PR bug inside an isolated container:
+---
+
+### Scenario 1: Evaluators & Judges (Instant Docker Verification — No API Keys Needed)
+Verify the real-world HTTPX unmerged Pull Request bug in an isolated container without any API keys:
 ```bash
-# Build the worker image
+# Build the target worker image
 docker build -t reproforge-worker:httpx -f worker/Dockerfile.httpx worker
 
-# Run differential verification in Docker sandbox
+# Run deterministic differential verification in Docker
 reproforge run \
   --case evals/cases/httpx-3771.json \
   --candidate artifacts/encode-httpx-3771/candidate.py \
   --backend docker
 ```
+> **What happens:** ReproForge fetches `encode/httpx`, pulls unmerged PR branch `pull/3771/head`, triggers `IndexError` in the container sandbox on `master`, and confirms it passes cleanly on the PR branch (`differentially_verified`).
 
-### 3. Live AI Synthesis (Gemma)
-To have Gemma read an issue manifest and generate a new regression test live:
+---
+
+### Scenario 2: Live AI Test Synthesis (Gemma / Gemini)
+Have Gemma read a crash manifest and synthesize a brand-new test from scratch:
 ```bash
 # Using Google Gemini API:
 GEMINI_API_KEY=your_key reproforge run --case evals/cases/click-3449.json --backend docker
 
-# Using DigitalOcean Serverless GenAI Inference:
+# Using DigitalOcean Serverless GenAI Inference (Gemma 4):
 DO_INFERENCE_API_KEY=your_key reproforge run --case evals/cases/click-3449.json --model-backend digitalocean --backend docker
 ```
+> **What happens:** The model reads the traceback and source code, writes a minimal `pytest` test asserting correct behavior, AST anti-cheating validates the code, and Docker executes differential verification.
 
 ---
 
-## Cloud Server & Remote Triage (DigitalOcean)
-
-ReproForge includes a lightweight HTTP API server to run autonomous reproductions headlessly on a cloud server or **DigitalOcean Droplet**:
-
+### Scenario 3: Open-Source Maintainers (Triaging Your Own Repository Issue)
+To triage an incoming bug report in your own Python library:
+1. Create a simple JSON manifest (`my_issue.json`):
+```json
+{
+  "case_id": "my-library-issue-101",
+  "repository_url": "https://github.com/my-org/my-repo.git",
+  "issue_text": "Calling parse_data('') raises ValueError: empty buffer",
+  "expected_exception": "ValueError",
+  "affected_ref": "v1.2.0",
+  "fixed_ref": "main"
+}
+```
+2. Run ReproForge to generate and verify the reproduction:
 ```bash
+GEMINI_API_KEY=your_key reproforge run --case my_issue.json --backend docker
+```
+3. **The Result:** ReproForge outputs `artifacts/my-library-issue-101/candidate.py`. You can commit this file directly into your repository's `tests/` folder as a permanent regression test.
+
+---
+
+### Scenario 4: Remote Teams & CI/CD Automation (Cloud Server & HTTP API)
+Run ReproForge headlessly on a cloud server or DigitalOcean Droplet so team members can triage bugs over HTTP without needing Docker on their laptops:
+```bash
+# Launch the background server
 reproforge serve --host 0.0.0.0 --port 8080
 ```
-
-### Endpoints
-- `GET /health` — Check server status & Docker availability.
-- `GET /cases` — List all curated evaluation cases.
-- `POST /run` — Trigger a remote container reproduction:
-  ```bash
-  curl -X POST http://<SERVER_IP>:8080/run \
-    -H "Content-Type: application/json" \
-    -d '{"case_id": "encode-httpx-3771", "candidate": "artifacts/encode-httpx-3771/candidate.py", "backend": "docker"}'
-  ```
-- `GET /evidence/<case_id>` — Retrieve full `evidence.json`.
-
-### 1-Click Droplet Deployment
-When launching an Ubuntu Droplet on DigitalOcean, check **Add User Data** in Advanced Options and paste [`deploy/cloud-init.yaml`](deploy/cloud-init.yaml). The Droplet will automatically install Docker, build the worker images, and start the systemd service on boot. Alternatively, run [`deploy/setup_server.sh`](deploy/setup_server.sh) on any existing Ubuntu server.
-
----
-
-## Real-World Use Cases (How Anyone Can Use This)
-
-ReproForge automates the hardest part of software triage—turning messy bug reports into verified, working code:
-
-### 1. Open-Source Maintainers (Automated Regression Tests)
-When a user reports a bug with a long traceback:
-1. Create a simple JSON manifest with the repository URL and traceback excerpt.
-2. Run `reproforge run --case issue.json --backend docker`.
-3. ReproForge synthesizes the minimal test and confirms it reproduces the crash on the broken release and passes on the fix.
-4. **The Takeaway:** The maintainer copies the verified [`candidate.py`](artifacts/encode-httpx-3771/candidate.py) directly into their repository's test suite as a permanent regression guard.
-
-### 2. CI/CD & GitHub Actions (Autonomous Issue Triage)
-Integrate ReproForge into automated workflows:
-- A webhook triggers ReproForge whenever a new issue or pull request is opened.
-- If verified, a bot automatically posts a comment on the GitHub issue with the reproduction test, saving maintainers hours of manual back-and-forth.
-
-### 3. Engineering Teams via Cloud API (Zero Local Setup)
-Deploy ReproForge on a central cloud server or DigitalOcean Droplet:
-- Developers trigger reproductions over HTTP: `curl -X POST http://<SERVER_IP>:8080/run`.
-- The remote server isolates the test execution in Docker and returns `evidence.json` without requiring Docker on developers' personal laptops.
-
-### 4. Hackathon Judges & Evaluators (Instant Verification)
-Anyone can clone and benchmark ReproForge in seconds:
+Trigger remote container reproductions from any terminal or webhook:
 ```bash
-git clone https://github.com/Rigur-Calypso/reproforge.git && cd reproforge
-python3 -m venv .venv && source .venv/bin/activate && pip install -e '.[dev]'
-reproforge run --case evals/cases/httpx-3771.json --candidate artifacts/encode-httpx-3771/candidate.py --backend docker
+curl -X POST http://<SERVER_IP>:8080/run \
+  -H "Content-Type: application/json" \
+  -d '{"case_id": "encode-httpx-3771", "candidate": "artifacts/encode-httpx-3771/candidate.py", "backend": "docker"}'
 ```
+> **1-Click Cloud Deployment:** When launching an Ubuntu Droplet on DigitalOcean, paste [`deploy/cloud-init.yaml`](deploy/cloud-init.yaml) into **User Data** (or run [`deploy/setup_server.sh`](deploy/setup_server.sh) on any server).
 
 ---
 
