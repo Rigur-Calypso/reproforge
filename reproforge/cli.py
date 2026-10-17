@@ -64,6 +64,8 @@ def _run(args: argparse.Namespace) -> None:
         temp_root = Path(temporary)
         clone = temp_root / "source"
         _git(["clone", "--quiet", "--filter=blob:none", "--no-checkout", repo_url, str(clone)])
+        for ref_spec in case.get("fetch_refs", []):
+            _git(["-C", str(clone), "fetch", "--quiet", "origin", ref_spec])
         affected = temp_root / "affected"
         fixed = temp_root / "fixed"
         _git(["-C", str(clone), "worktree", "add", "--quiet", "--detach", str(affected), affected_ref])

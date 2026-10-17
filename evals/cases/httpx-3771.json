@@ -1,0 +1,20 @@
+{
+  "case_id": "encode-httpx-3771",
+  "issue_url": "https://github.com/encode/httpx/pull/3771",
+  "repository_url": "https://github.com/encode/httpx.git",
+  "summary": "Fix unquote IndexError on empty string input.",
+  "issue_text": "unquote('') in _utils.py raises IndexError because it accesses value[0] without checking string length first. This can occur when parsing digest auth WWW-Authenticate headers containing parameters with empty unquoted values (e.g. realm= instead of realm=\"\"). The test must assert that calling unquote(\"\") returns \"\" without crashing.",
+  "traceback_excerpt": "httpx/_utils.py, in unquote: return value[1:-1] if value[0] == value[-1] == '\"' else value; IndexError: string index out of range",
+  "expected_exception": "IndexError",
+  "message_pattern": "string index out of range",
+  "reported_functions": ["unquote"],
+  "package_name": "httpx",
+  "repo_roots": ["httpx"],
+  "import_paths": ["."],
+  "context_files": ["httpx/_utils.py"],
+  "fetch_refs": ["pull/3771/head:pr-3771"],
+  "affected_ref": "ae1b9f66238f75ced3ced5e4485408435de10768",
+  "fixed_ref": "pr-3771",
+  "python_version": "3.13",
+  "fix_reference": "https://github.com/encode/httpx/pull/3771"
+}

@@ -1,0 +1,164 @@
+{
+  "case_id": "encode-httpx-3771",
+  "issue_url": "https://github.com/encode/httpx/pull/3771",
+  "repository_url": "https://github.com/encode/httpx.git",
+  "repository_source_override": null,
+  "affected_ref": "ae1b9f66238f75ced3ced5e4485408435de10768",
+  "fixed_ref": "pr-3771",
+  "model_backend": "gemini",
+  "execution_backend": "host-unsafe",
+  "model_generated_candidate": true,
+  "status": "differentially_verified",
+  "attempts": [
+    {
+      "attempt": 1,
+      "affected": {
+        "exit_code": 1,
+        "timed_out": false,
+        "event": {
+          "exception_message": "string index out of range",
+          "exception_type": "IndexError",
+          "frames": [
+            {
+              "function": "from_call",
+              "line": 344,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "<lambda>",
+              "line": 246,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "__call__",
+              "line": 197,
+              "path": "site-packages/pluggy/_caller.py"
+            },
+            {
+              "function": "_hookexec",
+              "line": 183,
+              "path": "site-packages/pluggy/_manager.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 195,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 850,
+              "path": "site-packages/_pytest/logging.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 900,
+              "path": "site-packages/_pytest/capture.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 263,
+              "path": "site-packages/_pytest/skipping.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 147,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 178,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "runtest",
+              "line": 1671,
+              "path": "site-packages/_pytest/python.py"
+            },
+            {
+              "function": "__call__",
+              "line": 197,
+              "path": "site-packages/pluggy/_caller.py"
+            },
+            {
+              "function": "_hookexec",
+              "line": 183,
+              "path": "site-packages/pluggy/_manager.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 195,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 147,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "pytest_pyfunc_call",
+              "line": 157,
+              "path": "site-packages/_pytest/python.py"
+            },
+            {
+              "function": "test_unquote_empty_string",
+              "line": 5,
+              "path": "candidate/test_reproduction.py"
+            },
+            {
+              "function": "unquote",
+              "line": 92,
+              "path": "httpx/_utils.py"
+            }
+          ],
+          "exit_code": 1
+        },
+        "duration_seconds": 0.185,
+        "output_excerpt": "REPROFORGE_EVENT={\"exception_message\": \"string index out of range\", \"exception_type\": \"IndexError\", \"frames\": [{\"function\": \"from_call\", \"line\": 344, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"<lambda>\", \"line\": 246, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 850, \"path\": \"site-packages/_pytest/logging.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 900, \"path\": \"site-packages/_pytest/capture.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 263, \"path\": \"site-packages/_pytest/skipping.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 178, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"runtest\", \"line\": 1671, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_pyfunc_call\", \"line\": 157, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"test_unquote_empty_string\", \"line\": 5, \"path\": \"candidate/test_reproduction.py\"}, {\"function\": \"unquote\", \"line\": 92, \"path\": \"httpx/_utils.py\"}]}\nF                                                                        [100%]\n=================================== FAILURES ===================================\n__________________________ test_unquote_empty_string ___________________________\n\n    def test_unquote_empty_string():\n>       assert unquote(\"\") == \"\"\n               ^^^^^^^^^^^\n\n<workspace>/Desktop/MLH Event - My college/artifacts/encode-httpx-3771/candidate.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = ''\n\n    def unquote(value: str) -> str:\n>       return value[1:-1] if value[0] == value[-1] == '\"' else value\n                              ^^^^^^^^\nE       IndexError: string index out of range\n\nhttpx/_utils.py:92: IndexError\n=========================== short test summary info ============================\nFAILED ../../../../../../../..<workspace>/Desktop/MLH Event - My college/artifacts/encode-httpx-3771/candidate.py::test_unquote_empty_string\n1 failed in 0.05s\n",
+        "output_truncated": false
+      },
+      "affected_signature_check": {
+        "verified": true,
+        "reasons": [],
+        "deepest_repo_frame": {
+          "function": "unquote",
+          "line": 92,
+          "path": "httpx/_utils.py"
+        }
+      },
+      "fixed": {
+        "exit_code": 0,
+        "timed_out": false,
+        "event": null,
+        "output_excerpt": ".                                                                        [100%]\n1 passed in 0.04s\n",
+        "output_truncated": false
+      },
+      "differential_check": {
+        "verified": true,
+        "reasons": [
+          "reported failure matched on affected revision and test passed on fix revision"
+        ],
+        "deepest_repo_frame": {
+          "function": "unquote",
+          "line": 92,
+          "path": "httpx/_utils.py"
+        }
+      }
+    }
+  ],
+  "candidate_path": "candidate.py"
+}
