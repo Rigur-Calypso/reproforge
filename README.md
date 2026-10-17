@@ -137,6 +137,37 @@ When launching an Ubuntu Droplet on DigitalOcean, check **Add User Data** in Adv
 
 ---
 
+## Real-World Use Cases (How Anyone Can Use This)
+
+ReproForge automates the hardest part of software triage—turning messy bug reports into verified, working code:
+
+### 1. Open-Source Maintainers (Automated Regression Tests)
+When a user reports a bug with a long traceback:
+1. Create a simple JSON manifest with the repository URL and traceback excerpt.
+2. Run `reproforge run --case issue.json --backend docker`.
+3. ReproForge synthesizes the minimal test and confirms it reproduces the crash on the broken release and passes on the fix.
+4. **The Takeaway:** The maintainer copies the verified [`candidate.py`](artifacts/encode-httpx-3771/candidate.py) directly into their repository's test suite as a permanent regression guard.
+
+### 2. CI/CD & GitHub Actions (Autonomous Issue Triage)
+Integrate ReproForge into automated workflows:
+- A webhook triggers ReproForge whenever a new issue or pull request is opened.
+- If verified, a bot automatically posts a comment on the GitHub issue with the reproduction test, saving maintainers hours of manual back-and-forth.
+
+### 3. Engineering Teams via Cloud API (Zero Local Setup)
+Deploy ReproForge on a central cloud server or DigitalOcean Droplet:
+- Developers trigger reproductions over HTTP: `curl -X POST http://<SERVER_IP>:8080/run`.
+- The remote server isolates the test execution in Docker and returns `evidence.json` without requiring Docker on developers' personal laptops.
+
+### 4. Hackathon Judges & Evaluators (Instant Verification)
+Anyone can clone and benchmark ReproForge in seconds:
+```bash
+git clone https://github.com/Rigur-Calypso/reproforge.git && cd reproforge
+python3 -m venv .venv && source .venv/bin/activate && pip install -e '.[dev]'
+reproforge run --case evals/cases/httpx-3771.json --candidate artifacts/encode-httpx-3771/candidate.py --backend docker
+```
+
+---
+
 ## License
 
 ReproForge source is MIT licensed. Model, API, and dependency terms remain governed by their respective providers.
