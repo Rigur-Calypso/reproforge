@@ -22,97 +22,97 @@
             {
               "function": "from_call",
               "line": 344,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/runner.py"
+              "path": "site-packages/_pytest/runner.py"
             },
             {
               "function": "<lambda>",
               "line": 246,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/runner.py"
+              "path": "site-packages/_pytest/runner.py"
             },
             {
               "function": "__call__",
               "line": 197,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_caller.py"
+              "path": "site-packages/pluggy/_caller.py"
             },
             {
               "function": "_hookexec",
               "line": 183,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_manager.py"
+              "path": "site-packages/pluggy/_manager.py"
             },
             {
               "function": "_multicall",
               "line": 195,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "_multicall",
               "line": 167,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "pytest_runtest_call",
               "line": 850,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/logging.py"
+              "path": "site-packages/_pytest/logging.py"
             },
             {
               "function": "_multicall",
               "line": 167,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "pytest_runtest_call",
               "line": 900,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/capture.py"
+              "path": "site-packages/_pytest/capture.py"
             },
             {
               "function": "_multicall",
               "line": 167,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "pytest_runtest_call",
               "line": 263,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/skipping.py"
+              "path": "site-packages/_pytest/skipping.py"
             },
             {
               "function": "_multicall",
               "line": 147,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "pytest_runtest_call",
               "line": 178,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/runner.py"
+              "path": "site-packages/_pytest/runner.py"
             },
             {
               "function": "runtest",
               "line": 1671,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/python.py"
+              "path": "site-packages/_pytest/python.py"
             },
             {
               "function": "__call__",
               "line": 197,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_caller.py"
+              "path": "site-packages/pluggy/_caller.py"
             },
             {
               "function": "_hookexec",
               "line": 183,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_manager.py"
+              "path": "site-packages/pluggy/_manager.py"
             },
             {
               "function": "_multicall",
               "line": 195,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "_multicall",
               "line": 147,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/pluggy/_execution.py"
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "pytest_pyfunc_call",
               "line": 157,
-              "path": "/Users/rigur_calypso/Desktop/MLH Event - My college/.venv/lib/python3.13/site-packages/_pytest/python.py"
+              "path": "site-packages/_pytest/python.py"
             },
             {
               "function": "test_echo_via_pager",
@@ -128,7 +128,7 @@
           "exit_code": 1
         },
         "duration_seconds": 0.165,
-        "output_excerpt": "      :param input: the input data for `sys.stdin`.\n        :param env: the environment overrides.\n        :param catch_exceptions: Whether to catch any other exceptions than\n                                 ``SystemExit``. If :data:`None`, the value\n                                 from :class:`CliRunner` is used.\n        :param extra: the keyword arguments to pass to :meth:`main`.\n        :param color: whether the output should contain color codes. The\n                      application can still override this explicitly.\n    \n        .. versionadded:: 8.2\n            The result object has the ``output_bytes`` attribute with\n            the mix of ``stdout_bytes`` and ``stderr_bytes``, as the user would\n            see it in its terminal.\n    \n        .. versionchanged:: 8.2\n            The result object always returns the ``stderr_bytes`` stream.\n    \n        .. versionchanged:: 8.0\n            The result object has the ``return_value`` attribute with\n            the value returned from the invoked command.\n    \n        .. versionchanged:: 4.0\n            Added the ``color`` parameter.\n    \n        .. versionchanged:: 3.0\n            Added the ``catch_exceptions`` parameter.\n    \n        .. versionchanged:: 3.0\n            The result object has the ``exc_info`` attribute with the\n            traceback if available.\n        \"\"\"\n        exc_info = None\n        if catch_exceptions is None:\n            catch_exceptions = self.catch_exceptions\n    \n        # Set up fd capture before isolation replaces sys.stdout and sys.stderr.\n        cap_out: _FDCapture | None = None\n        cap_err: _FDCapture | None = None\n    \n        if self.capture == \"fd\":\n            cap_out = _FDCapture(1)\n            cap_err = _FDCapture(2)\n            try:\n                cap_out.start()\n                cap_err.start()\n            except OSError:\n                cap_out = cap_err = None\n    \n        with self.isolation(input=input, env=env, color=color) as outstreams:\n            # Point the captured streams' fileno() at the saved (original)\n            # fd so that C-level consumers like faulthandler keep working\n            # while fd 1/2 are redirected to the capture tmpfile.\n            if cap_out is not None and cap_err is not None:\n                sys.stdout._original_fd = cap_out.saved_fd  # type: ignore[union-attr]\n                sys.stderr._original_fd = cap_err.saved_fd  # type: ignore[union-attr]\n    \n            return_value = None\n            exception: BaseException | None = None\n            exit_code = 0\n    \n            if isinstance(args, str):\n                args = shlex.split(args)\n    \n            try:\n                prog_name = extra.pop(\"prog_name\")\n            except KeyError:\n                prog_name = self.get_default_prog_name(cli)\n    \n            try:\n                return_value = cli.main(args=args or (), prog_name=prog_name, **extra)\n            except SystemExit as e:\n                exc_info = sys.exc_info()\n                e_code = t.cast(\"int | t.Any | None\", e.code)\n    \n                if e_code is None:\n                    e_code = 0\n    \n                if e_code != 0:\n                    exception = e\n    \n                if not isinstance(e_code, int):\n                    sys.stdout.write(str(e_code))\n                    sys.stdout.write(\"\\n\")\n                    e_code = 1\n    \n                exit_code = e_code\n    \n            except Exception as e:\n                if not catch_exceptions:\n                    raise\n                exception = e\n                exit_code = 1\n                exc_info = sys.exc_info()\n            finally:\n>               sys.stdout.flush()\nE               ValueError: I/O operation on closed file.\n\nsrc/click/testing.py:676: ValueError\n=========================== short test summary info ============================\nFAILED ../../../../../../../../Users/rigur_calypso/Desktop/MLH Event - My college/artifacts/pallets-click-3449/candidate.py::test_echo_via_pager\n1 failed in 0.03s\n",
+        "output_excerpt": "      :param input: the input data for `sys.stdin`.\n        :param env: the environment overrides.\n        :param catch_exceptions: Whether to catch any other exceptions than\n                                 ``SystemExit``. If :data:`None`, the value\n                                 from :class:`CliRunner` is used.\n        :param extra: the keyword arguments to pass to :meth:`main`.\n        :param color: whether the output should contain color codes. The\n                      application can still override this explicitly.\n    \n        .. versionadded:: 8.2\n            The result object has the ``output_bytes`` attribute with\n            the mix of ``stdout_bytes`` and ``stderr_bytes``, as the user would\n            see it in its terminal.\n    \n        .. versionchanged:: 8.2\n            The result object always returns the ``stderr_bytes`` stream.\n    \n        .. versionchanged:: 8.0\n            The result object has the ``return_value`` attribute with\n            the value returned from the invoked command.\n    \n        .. versionchanged:: 4.0\n            Added the ``color`` parameter.\n    \n        .. versionchanged:: 3.0\n            Added the ``catch_exceptions`` parameter.\n    \n        .. versionchanged:: 3.0\n            The result object has the ``exc_info`` attribute with the\n            traceback if available.\n        \"\"\"\n        exc_info = None\n        if catch_exceptions is None:\n            catch_exceptions = self.catch_exceptions\n    \n        # Set up fd capture before isolation replaces sys.stdout and sys.stderr.\n        cap_out: _FDCapture | None = None\n        cap_err: _FDCapture | None = None\n    \n        if self.capture == \"fd\":\n            cap_out = _FDCapture(1)\n            cap_err = _FDCapture(2)\n            try:\n                cap_out.start()\n                cap_err.start()\n            except OSError:\n                cap_out = cap_err = None\n    \n        with self.isolation(input=input, env=env, color=color) as outstreams:\n            # Point the captured streams' fileno() at the saved (original)\n            # fd so that C-level consumers like faulthandler keep working\n            # while fd 1/2 are redirected to the capture tmpfile.\n            if cap_out is not None and cap_err is not None:\n                sys.stdout._original_fd = cap_out.saved_fd  # type: ignore[union-attr]\n                sys.stderr._original_fd = cap_err.saved_fd  # type: ignore[union-attr]\n    \n            return_value = None\n            exception: BaseException | None = None\n            exit_code = 0\n    \n            if isinstance(args, str):\n                args = shlex.split(args)\n    \n            try:\n                prog_name = extra.pop(\"prog_name\")\n            except KeyError:\n                prog_name = self.get_default_prog_name(cli)\n    \n            try:\n                return_value = cli.main(args=args or (), prog_name=prog_name, **extra)\n            except SystemExit as e:\n                exc_info = sys.exc_info()\n                e_code = t.cast(\"int | t.Any | None\", e.code)\n    \n                if e_code is None:\n                    e_code = 0\n    \n                if e_code != 0:\n                    exception = e\n    \n                if not isinstance(e_code, int):\n                    sys.stdout.write(str(e_code))\n                    sys.stdout.write(\"\\n\")\n                    e_code = 1\n    \n                exit_code = e_code\n    \n            except Exception as e:\n                if not catch_exceptions:\n                    raise\n                exception = e\n                exit_code = 1\n                exc_info = sys.exc_info()\n            finally:\n>               sys.stdout.flush()\nE               ValueError: I/O operation on closed file.\n\nsrc/click/testing.py:676: ValueError\n=========================== short test summary info ============================\nFAILED ../../../../../../../..<workspace>/artifacts/pallets-click-3449/candidate.py::test_echo_via_pager\n1 failed in 0.03s\n",
         "output_truncated": true
       },
       "affected_signature_check": {

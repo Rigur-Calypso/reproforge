@@ -43,7 +43,30 @@ def test_reject_missing_assert():
 def test_something():
     x = 10
 """
-    with pytest.raises(CandidateRejected, match="assert the expected successful behavior"):
+    with pytest.raises(CandidateRejected, match="assert the expected successful behavior inside a test function"):
+        validate_test_source(source, expected_exception="ValueError")
+
+
+def test_reject_assert_only_at_module_level():
+    source = """
+assert True
+
+def test_empty():
+    pass
+"""
+    with pytest.raises(CandidateRejected, match="assert the expected successful behavior inside a test function"):
+        validate_test_source(source, expected_exception="ValueError")
+
+
+def test_reject_assert_only_in_helper_function():
+    source = """
+def helper():
+    assert 1 == 1
+
+def test_empty():
+    pass
+"""
+    with pytest.raises(CandidateRejected, match="assert the expected successful behavior inside a test function"):
         validate_test_source(source, expected_exception="ValueError")
 
 

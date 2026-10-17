@@ -152,6 +152,8 @@ def _git(args: list[str]) -> None:
 
 def _public_worker_result(result: dict[str, Any]) -> dict[str, Any]:
     output = result.get("output", "")
+    for sensitive in (str(Path.home()), str(Path.cwd())):
+        output = output.replace(sensitive, "<workspace>")
     return {key: value for key, value in result.items() if key != "output"} | {
         "output_excerpt": output[-4000:],
         "output_truncated": len(output) > 4000,

@@ -4,9 +4,7 @@ ReproForge takes a curated Python crash report and repository case, asks Gemma t
 
 ## Current status
 
-## Current status
-
-The prototype has a runnable CLI, Gemini and DigitalOcean Inference adapters, an AST anti-cheating guard, a constrained Docker worker, a traceback verifier, an 18-test verifier integrity suite, and a curated fail-to-pass case for [Click issue #3449](https://github.com/pallets/click/issues/3449). 
+The prototype has a runnable CLI, Gemini and DigitalOcean Inference adapters, an AST anti-cheating guard, a constrained Docker worker, a traceback verifier, a 20-test verifier integrity suite, and a curated fail-to-pass case for [Click issue #3449](https://github.com/pallets/click/issues/3449). 
 
 The pipeline has been run end-to-end with **live model generation**: the model was prompted with the issue manifest and repository context, synthesized a clean candidate `pytest` test on attempt 1, and ReproForge's deterministic verifier confirmed the differential failure-to-pass reproduction against Click 8.4.0 and the fix commit.
 
@@ -46,29 +44,43 @@ reproforge run \
   --backend host-unsafe
 ```
 
-To run inside Docker container isolation, build the worker image first and omit `--backend host-unsafe`:
+### Running in Docker Container Isolation
+
+Build the isolated worker image:
 
 ```bash
 docker build -t reproforge-worker:py313 -f worker/Dockerfile .
-reproforge run --case evals/cases/click-3449.json
 ```
 
-The command fetches the public Click repository, creates detached checkouts for the affected and fixed commits, executes the candidate, verifies the failure signature, and writes `artifacts/pallets-click-3449/evidence.json` and `candidate.py`.
+Run the baseline test in disposable containers (no API key needed):
+
+```bash
+reproforge run \
+  --case evals/cases/click-3449.json \
+  --candidate evals/reproductions/click_3449.py
+```
+
+Or run live model generation inside container isolation:
+
+```bash
+GEMINI_API_KEY=your_key_here reproforge run --case evals/cases/click-3449.json
+```
+
+The command fetches the public Click repository, creates detached checkouts for the affected and fixed commits, executes the candidate in separate disposable containers, verifies the failure signature, and writes `artifacts/pallets-click-3449/evidence.json` and `candidate.py`.
 
 An alternate DigitalOcean Inference backend is available with `--model-backend digitalocean` and `DO_INFERENCE_API_KEY`. Host execution is available for trusted local evaluation using `--backend host-unsafe`; it is not a sandbox. The default Docker worker has networking disabled and mounts source and candidate read-only.
 
 ## Verification & Anti-Cheating Behavior
 
-A candidate must be a regular success test with an assertion. The validator statically checks Python AST and rejects:
-- `pytest.raises` (cannot fake expected failure)
-- Direct `raise <ExpectedException>` (cannot artificially throw the error)
-- `monkeypatch` fixture (cannot modify test runtime)
-- `unittest.mock` imports (cannot mock out internal behavior)
-- Tests with missing assertions or syntax errors
+A candidate must be a regular success test asserting correct behavior. The validator statically inspects Python AST to reject common spoofing patterns:
+- Tests using `pytest.raises` (rejects attempts to invert the test so it passes on the bug)
+- Direct `raise <ExpectedException>` (rejects candidates that artificially trigger the crash)
+- `monkeypatch` fixture or `unittest.mock` imports (rejects test-time mocking of internal behavior)
+- Tests lacking assertions inside test functions
 
-For a differential pass, the runner must observe a failing test on the affected revision, with the reported exception, message, and reported function all matching when supplied. The deepest repo-owned traceback frame must be in the target package; dependency frames can be deeper and do not disqualify the report's own frame. The exact same test must pass on the fix revision.
+While static AST validation filters out obvious shortcuts and invalid structures, deterministic differential execution across the affected and fixed revisions remains the ground truth standard for verification.
 
-A comprehensive unit test suite in `tests/test_verifier.py` (18 tests) verifies all of these rejection rules and matching criteria.
+A comprehensive unit test suite in `tests/test_verifier.py` (20 tests) verifies all of these rejection rules and matching criteria.
 
 ## Results
 

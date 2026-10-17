@@ -42,9 +42,12 @@ def validate_test_source(source: str, expected_exception: str) -> None:
     if not test_functions:
         raise CandidateRejected("candidate must define at least one pytest test function")
 
-    has_assert = any(isinstance(node, ast.Assert) for node in ast.walk(tree))
-    if not has_assert:
-        raise CandidateRejected("candidate must assert the expected successful behavior")
+    has_test_with_assert = any(
+        any(isinstance(sub, ast.Assert) for sub in ast.walk(fn))
+        for fn in test_functions
+    )
+    if not has_test_with_assert:
+        raise CandidateRejected("candidate must assert the expected successful behavior inside a test function")
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and _is_pytest_raises(node):

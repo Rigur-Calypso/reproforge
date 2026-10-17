@@ -27,8 +27,11 @@ def pytest_runtest_makereport(item, call):
         except ValueError:
             if frame_path == candidate:
                 relative = "candidate/test_reproduction.py"
+            elif "site-packages" in frame_path.parts:
+                idx = frame_path.parts.index("site-packages")
+                relative = f"site-packages/{'/'.join(frame_path.parts[idx+1:])}"
             else:
-                relative = frame_path.as_posix()
+                relative = frame_path.name
         frames.append({
             "path": relative,
             "function": tb.tb_frame.f_code.co_name,

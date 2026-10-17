@@ -240,25 +240,30 @@ Start with one known issue/fix pair, then add cases only as time allows. Each ca
 
 Report counts plainly, for example: “Differentially reproduced 2 of 3 curated issues; one setup failure; zero false verified results in this set.” Do not generalize from a tiny benchmark. Track false verified results as the highest priority metric; if one occurs, fix the verifier before making a verification claim.
 
-## Implemented source layout and deferred modules
+## Implemented source layout and planned modules
 
 ```text
 reproforge/
 ├── reproforge/
-│   ├── cli.py
-│   ├── issue.py
-│   ├── repo.py
-│   ├── gemma.py
-│   ├── runner.py
-│   ├── verifier.py
-│   └── artifacts.py
+│   ├── __init__.py           # Package marker
+│   ├── cli.py               # CLI orchestration, worktrees, retries, and evidence
+│   ├── gemini.py            # Gemini and DigitalOcean model adapters
+│   ├── runner.py            # Docker execution and host-unsafe runner
+│   ├── verifier.py          # AST anti-cheating validator and differential verifier
+│   ├── [planned] issue.py   # Future: automatic GitHub issue scraper
+│   └── [planned] repo.py    # Future: automatic repository inspector
 ├── worker/
-│   └── Dockerfile
-├── deploy/digitalocean/
-├── evals/cases.jsonl
-├── docs/design.md
+│   ├── Dockerfile           # Minimal pinned worker container
+│   └── pytest_plugin.py     # Custom telemetry plugin for structured exceptions
+├── tests/
+│   └── test_verifier.py     # 20 unit tests for AST safeguards and signature logic
+├── evals/
+│   ├── cases/               # Curated JSON evaluation manifests
+│   └── reproductions/       # Baseline reference reproductions
+├── artifacts/               # Generated candidate tests and evidence reports
+├── docs/design.md           # Architecture design
 ├── README.md
 └── LICENSE
 ```
 
-The core implemented files are `reproforge/cli.py`, `reproforge/gemma.py`, `reproforge/runner.py`, `reproforge/verifier.py`, `worker/pytest_plugin.py`, and `worker/Dockerfile`. Automated issue parsing, repository context selection beyond manifest-listed files, Droplet deployment manifests, and broad eval management remain future work.
+The core implemented files are `reproforge/cli.py`, `reproforge/gemini.py`, `reproforge/runner.py`, `reproforge/verifier.py`, `worker/pytest_plugin.py`, `worker/Dockerfile`, and `tests/test_verifier.py`. Automatic scraping of arbitrary GitHub issues, dynamic repository context indexing, and live Droplet hosting remain future work.
