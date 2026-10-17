@@ -1,7 +1,7 @@
 # ReproForge Presentation Deck
 
 > **Prompt for Gamma (gamma.app):**
-> "Create a modern, sleek, high-tech presentation deck based on the following slide-by-slide content for an AI developer tooling project called ReproForge. Highlight that ReproForge is powered by both Google Gemma and DigitalOcean. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
+> "Create a modern, sleek, high-tech presentation deck based on the following slide-by-slide content for an AI developer tooling project called ReproForge. Prominently highlight that ReproForge is powered by both Google Gemma and DigitalOcean. Include the embedded images and diagrams on their respective cards. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
 
 ---
 
@@ -9,7 +9,8 @@
 # ReproForge
 ### Autonomous AI Bug Reproduction & Zero-Trust Regression Verification
 #### Powered by Google Gemma & DigitalOcean
-- **Core Philosophy:** Gemma proposes candidate tests; deterministic container sandboxes decide the verdict.
+![ReproForge GitHub Repository](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_repo_overview.png)
+- **Core Philosophy:** Gemma proposes candidate tests; DigitalOcean container sandboxes decide the verdict.
 - **Presenter:** Hackathon Team
 - **Track Categories:** Google / Gemma Track & DigitalOcean Cloud Track
 - **Repository:** https://github.com/Rigur-Calypso/reproforge
@@ -30,7 +31,7 @@
 ## Slide 3: The Solution
 # Enter ReproForge
 ### Turning messy GitHub crash reports into verified, minimal pytest regression tests.
-- **Dual Sponsor Integration:** Combines **Google Gemma's** semantic code understanding with **DigitalOcean's** secure cloud infrastructure.
+- **Dual Technology Integration:** Combines **Google Gemma's** semantic code understanding with **DigitalOcean's** secure cloud infrastructure.
 - **Zero-Trust AI:** We never believe an LLM's self-reported success.
 - **Dual-Worktree Isolation:** Tests are executed across both the broken revision and the fixed revision.
 - **Differential Proof:** A test is certified only if it triggers the exact reported traceback on the bug, and passes cleanly (exit code 0) on the fix.
@@ -40,11 +41,10 @@
 
 ## Slide 4: System Architecture
 # The 5-Stage Zero-Trust Pipeline
-```
-[ GitHub Issue & PR ] ──► [ Gemma 4 Synthesis ] ──► [ AST Anti-Cheating ] ──► [ DigitalOcean Sandbox ] ──► [ Certified Evidence ]
-```
+![ReproForge Zero-Trust Architecture](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/architecture_diagram.png)
+
 1. **Intake & Worktrees:** Clones repo at `blob:none` and checks out `affected` vs `fixed` worktrees.
-2. **AI Code Synthesis (Gemma 4):** Powered by Gemma 4 (`gemma-4-31b-it`) via DigitalOcean Serverless GenAI Inference or Google Gemini API.
+2. **AI Code Synthesis (Google Gemma):** Powered by Gemma 4 (`gemma-4-31b-it`) via DigitalOcean Serverless GenAI Inference or Google Gemini API.
 3. **Static AST Analysis:** Inspects syntax tree to mathematically reject cheating before execution.
 4. **Isolated Sandbox (DigitalOcean / Docker):** Runs tests in disposable containers (`--network none`, `--read-only`, dropped capabilities).
 5. **Deterministic Verifier:** Confirms failure signature matches on broken revision and passes cleanly (exit 0) on fix.
@@ -54,15 +54,16 @@
 ## Slide 5: The Dual Powerhouse
 # How Both Gemma and DigitalOcean Are Used
 ### ReproForge leverages Gemma for intelligence and DigitalOcean for secure cloud compute.
+![ReproForge Dual Powerhouse Integration](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/gemma_digitalocean_stack.png)
 
 #### 1. Google Gemma (The Intelligence Layer)
 - **Role:** Deep semantic code comprehension and minimal test generation.
 - **Model:** Gemma 4 (`gemma-4-31b-it`) and Google Gemini API.
-- **Context-Bounded Prompting:** Gemma digests crash tracebacks, error signatures, and repository source excerpts ($\le 3,500$ chars).
+- **Context-Bounded Prompting:** Gemma digests crash tracebacks, error signatures, and repository source excerpts (≤ 3,500 chars).
 - **Zero Hallucination:** Gemma is constrained to write pure, idiomatic assertions without mocking or inverted tests.
 
 #### 2. DigitalOcean (The Infrastructure & Inference Layer)
-- **GenAI Serverless Inference:** Native integration with DigitalOcean's Inference API (`https://inference.do-ai.run/v1`) hosting Gemma.
+- **GenAI Serverless Inference:** Direct adapter for DigitalOcean Inference API (`inference.do-ai.run/v1`) hosting Gemma.
 - **Droplet Worker Sandboxes:** Untrusted AI code is dangerous to run locally; DigitalOcean Droplets host disposable container workers.
 - **Security Guardrails:** Containers on Droplets enforce `--network none` (zero internet access), `--read-only` root filesystems, and dropped Linux capabilities.
 - **1-Click Cloud Bootstrap:** Includes `deploy/cloud-init.yaml` and `deploy/setup_server.sh` for instant Droplet provisioning.
@@ -81,8 +82,10 @@
 ---
 
 ## Slide 7: Security & Sandboxing
-# Isolated Container Execution
+# Isolated Container Execution on DigitalOcean
 ### Executing untrusted AI code safely without compromising host machines.
+![ReproForge GitHub Repository](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_repo_overview.png)
+
 - **Networkless Execution:** Containers run with `--network none` (zero internet access; cannot exfiltrate secrets).
 - **Read-Only Root Filesystem:** Prevents malware installation, disk wiping, or backdoors.
 - **Dropped Capabilities:** Drops all Linux root privileges (`--cap-drop ALL`, `--security-opt no-new-privileges`).
@@ -94,6 +97,7 @@
 ## Slide 8: Real-World Benchmark Results
 # Proven Across Real Open-Source Libraries
 ### Verified in isolated containers across diverse repositories.
+![ReproForge Verified Benchmark Suite](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/benchmark_scorecard.png)
 
 | Case ID | Target Repository | Environment | Target Error Signature | Verification Status |
 | :--- | :--- | :--- | :--- | :---: |
@@ -109,6 +113,8 @@
 ## Slide 9: The Live PR Benchmark
 # Benchmarking an Active, Unmerged PR
 ### Proving zero data leakage on live open-source triage (`encode/httpx#3771`).
+![Live Differential Proof Terminal](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/terminal_differential_proof.png)
+
 - **The Problem:** Historical benchmarks risk data contamination (models memorizing old, closed bugs).
 - **The Experiment:** Evaluated against an **active, open Pull Request** on HTTPX where `unquote("")` crashes.
 - **The Workflow:** ReproForge fetched `pull/3771/head:pr-3771` directly from GitHub.
@@ -118,7 +124,7 @@
   def test_unquote_empty_string():
       assert unquote("") == ""
   ```
-- **Differential Proof:** Crashed on `master` with `IndexError` $\rightarrow$ Passed on the unmerged PR branch with exit code 0!
+- **Differential Proof:** Crashed on `master` with `IndexError` → Passed on the unmerged PR branch with exit code 0!
 
 ---
 
