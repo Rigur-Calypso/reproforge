@@ -1,14 +1,15 @@
 # ReproForge Presentation Deck
 
 > **Prompt for Gamma (gamma.app):**
-> "Create a modern, sleek, high-tech presentation deck based on the following slide-by-slide content for an AI developer tooling project called ReproForge. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
+> "Create a modern, sleek, high-tech presentation deck based on the following slide-by-slide content for an AI developer tooling project called ReproForge. Highlight that ReproForge is powered by both Google Gemma and DigitalOcean. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
 
 ---
 
 ## Slide 1: Title Slide
 # ReproForge
 ### Autonomous AI Bug Reproduction & Zero-Trust Regression Verification
-- **Tagline:** Gemma proposes candidate tests; deterministic container sandboxes decide the verdict.
+#### Powered by Google Gemma & DigitalOcean
+- **Core Philosophy:** Gemma proposes candidate tests; deterministic container sandboxes decide the verdict.
 - **Presenter:** Hackathon Team
 - **Track Categories:** Google / Gemma Track & DigitalOcean Cloud Track
 - **Repository:** https://github.com/Rigur-Calypso/reproforge
@@ -29,6 +30,7 @@
 ## Slide 3: The Solution
 # Enter ReproForge
 ### Turning messy GitHub crash reports into verified, minimal pytest regression tests.
+- **Dual Sponsor Integration:** Combines **Google Gemma's** semantic code understanding with **DigitalOcean's** secure cloud infrastructure.
 - **Zero-Trust AI:** We never believe an LLM's self-reported success.
 - **Dual-Worktree Isolation:** Tests are executed across both the broken revision and the fixed revision.
 - **Differential Proof:** A test is certified only if it triggers the exact reported traceback on the bug, and passes cleanly (exit code 0) on the fix.
@@ -39,17 +41,35 @@
 ## Slide 4: System Architecture
 # The 5-Stage Zero-Trust Pipeline
 ```
-[ GitHub Issue & PR ] ──► [ Gemma 4 Synthesis ] ──► [ AST Anti-Cheating ] ──► [ Docker Sandbox ] ──► [ Certified Evidence ]
+[ GitHub Issue & PR ] ──► [ Gemma 4 Synthesis ] ──► [ AST Anti-Cheating ] ──► [ DigitalOcean Sandbox ] ──► [ Certified Evidence ]
 ```
 1. **Intake & Worktrees:** Clones repo at `blob:none` and checks out `affected` vs `fixed` worktrees.
-2. **AI Code Synthesis:** Gemma 4 analyzes the traceback excerpt and target source code ($\le 3,500$ chars).
+2. **AI Code Synthesis (Gemma 4):** Powered by Gemma 4 (`gemma-4-31b-it`) via DigitalOcean Serverless GenAI Inference or Google Gemini API.
 3. **Static AST Analysis:** Inspects syntax tree to mathematically reject cheating before execution.
-4. **Isolated Sandbox:** Runs test in disposable Docker containers (`--network none`, `--read-only`, dropped capabilities).
-5. **Deterministic Verifier:** Matches exception type, error message pattern, and repository stack frames.
+4. **Isolated Sandbox (DigitalOcean / Docker):** Runs tests in disposable containers (`--network none`, `--read-only`, dropped capabilities).
+5. **Deterministic Verifier:** Confirms failure signature matches on broken revision and passes cleanly (exit 0) on fix.
 
 ---
 
-## Slide 5: The Anti-Cheating Engine
+## Slide 5: The Dual Powerhouse
+# How Both Gemma and DigitalOcean Are Used
+### ReproForge leverages Gemma for intelligence and DigitalOcean for secure cloud compute.
+
+#### 1. Google Gemma (The Intelligence Layer)
+- **Role:** Deep semantic code comprehension and minimal test generation.
+- **Model:** Gemma 4 (`gemma-4-31b-it`) and Google Gemini API.
+- **Context-Bounded Prompting:** Gemma digests crash tracebacks, error signatures, and repository source excerpts ($\le 3,500$ chars).
+- **Zero Hallucination:** Gemma is constrained to write pure, idiomatic assertions without mocking or inverted tests.
+
+#### 2. DigitalOcean (The Infrastructure & Inference Layer)
+- **GenAI Serverless Inference:** Native integration with DigitalOcean's Inference API (`https://inference.do-ai.run/v1`) hosting Gemma.
+- **Droplet Worker Sandboxes:** Untrusted AI code is dangerous to run locally; DigitalOcean Droplets host disposable container workers.
+- **Security Guardrails:** Containers on Droplets enforce `--network none` (zero internet access), `--read-only` root filesystems, and dropped Linux capabilities.
+- **1-Click Cloud Bootstrap:** Includes `deploy/cloud-init.yaml` and `deploy/setup_server.sh` for instant Droplet provisioning.
+
+---
+
+## Slide 6: The Anti-Cheating Engine
 # Compiler-Level AST Validation
 ### Why string search fails and why compiler analysis is required.
 - **No `pytest.raises`:** Rejects attempts to catch the crash to simulate false passes.
@@ -60,7 +80,7 @@
 
 ---
 
-## Slide 6: Security & Sandboxing
+## Slide 7: Security & Sandboxing
 # Isolated Container Execution
 ### Executing untrusted AI code safely without compromising host machines.
 - **Networkless Execution:** Containers run with `--network none` (zero internet access; cannot exfiltrate secrets).
@@ -71,9 +91,9 @@
 
 ---
 
-## Slide 7: Real-World Proofs
-# Evaluation Benchmarks & Results
-### Proven across real production bugs in the Python ecosystem.
+## Slide 8: Real-World Benchmark Results
+# Proven Across Real Open-Source Libraries
+### Verified in isolated containers across diverse repositories.
 
 | Case ID | Target Repository | Environment | Target Error Signature | Verification Status |
 | :--- | :--- | :--- | :--- | :---: |
@@ -86,7 +106,7 @@
 
 ---
 
-## Slide 8: The Live PR Benchmark
+## Slide 9: The Live PR Benchmark
 # Benchmarking an Active, Unmerged PR
 ### Proving zero data leakage on live open-source triage (`encode/httpx#3771`).
 - **The Problem:** Historical benchmarks risk data contamination (models memorizing old, closed bugs).
@@ -102,25 +122,11 @@
 
 ---
 
-## Slide 9: Technology Stack
-# Gemma 4 & DigitalOcean Alignment
-### How our sponsors power the intelligence and infrastructure layers.
-- **Google / Gemma Track:**
-  - Gemma 4 acts as the code synthesis engine, reading tracebacks and writing idiomatic `pytest` files.
-  - Supports Google Gemini API and DigitalOcean GenAI Inference (`gemma-4-31b-it`).
-- **DigitalOcean Cloud Track:**
-  - Serverless GenAI Inference API adapter (`reproforge/gemini.py`).
-  - Worker container sandboxing designed for **DigitalOcean Droplets**.
-  - Includes [`deploy/cloud-init.yaml`](deploy/cloud-init.yaml) and [`deploy/setup_server.sh`](deploy/setup_server.sh) for 1-click automated cloud provisioning.
-  - Lightweight HTTP API daemon (`reproforge/server.py`) for headless remote triage.
-
----
-
 ## Slide 10: Real-World Impact
 # Who Uses ReproForge?
 - **Open-Source Maintainers:** Drops verified regression tests directly into their repository's `tests/` folder.
 - **CI/CD & GitHub Actions:** Automated bot comments verified reproduction tests on new issues with zero human effort.
-- **Engineering Teams:** Central cloud server allows developers to trigger container reproductions over HTTP without local Docker.
+- **Engineering Teams:** Central DigitalOcean Droplet allows developers to trigger container reproductions over HTTP without local Docker.
 - **Developers Everywhere:** Saves 2+ hours of manual setup per bug report.
 
 ---
@@ -128,6 +134,7 @@
 ## Slide 11: Summary & Conclusion
 # ReproForge
 ### Autonomous, Evidence-Backed Bug Triage for Python
+#### Combining Google Gemma Intelligence with DigitalOcean Cloud Compute
 - **Deterministic:** "Gemma proposes; containers decide."
 - **Protected:** AST compiler validation stops AI cheating.
 - **Proven:** 4 real-world benchmarks differentially verified.
