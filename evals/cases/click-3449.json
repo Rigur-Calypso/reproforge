@@ -1,0 +1,20 @@
+{
+  "case_id": "pallets-click-3449",
+  "issue_url": "https://github.com/pallets/click/issues/3449",
+  "repository_url": "https://github.com/pallets/click.git",
+  "summary": "CliRunner.invoke raises ValueError after a command uses echo_via_pager.",
+  "issue_text": "When echo_via_pager is used in a Click command, CliRunner.invoke fails with ValueError: I/O operation on closed file. The reporter says this occurs with Click 8.4 and does not occur with 8.3.3. The reproducer defines a command that calls echo_via_pager(\"Hello, Click!\") and invokes it with CliRunner().",
+  "traceback_excerpt": "click/testing.py, in invoke: sys.stdout.flush(); ValueError: I/O operation on closed file.",
+  "expected_exception": "ValueError",
+  "message_pattern": "I/O operation on closed file",
+  "reported_functions": ["invoke"],
+  "package_name": "click",
+  "repo_roots": ["src/click"],
+  "import_paths": ["src"],
+  "context_files": ["src/click/testing.py", "src/click/_termui_impl.py"],
+  "affected_ref": "8.4.0",
+  "fixed_ref": "4df304c658666f34a5ca4335ab0da15832f02f9e",
+  "python_version": "3.13",
+  "dependency_note": "Click's runtime package is pure Python and has no third-party runtime dependencies; pytest is supplied by the pinned ReproForge worker image.",
+  "fix_reference": "https://github.com/pallets/click/pull/3533"
+}

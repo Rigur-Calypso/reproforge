@@ -1,0 +1,68 @@
+{
+  "case_id": "pallets-click-3449",
+  "issue_url": "https://github.com/pallets/click/issues/3449",
+  "repository_url": "https://github.com/pallets/click.git",
+  "repository_source_override": null,
+  "affected_ref": "8.4.0",
+  "fixed_ref": "4df304c658666f34a5ca4335ab0da15832f02f9e",
+  "model_backend": "manual-candidate",
+  "execution_backend": "host-unsafe",
+  "model_generated_candidate": false,
+  "status": "differentially_verified",
+  "attempts": [
+    {
+      "attempt": 1,
+      "affected": {
+        "exit_code": 1,
+        "timed_out": false,
+        "event": {
+          "exception_message": "I/O operation on closed file.",
+          "exception_type": "ValueError",
+          "frames": [
+            {
+              "path": "src/click/testing.py",
+              "function": "invoke"
+            }
+          ],
+          "exit_code": 1
+        },
+        "duration_seconds": 0.138,
+        "output_excerpt": "ValueError: I/O operation on closed file.\n",
+        "output_truncated": true
+      },
+      "affected_signature_check": {
+        "verified": true,
+        "reasons": [],
+        "deepest_repo_frame": {
+          "function": "invoke",
+          "line": 676,
+          "path": "src/click/testing.py"
+        }
+      },
+      "fixed": {
+        "exit_code": 0,
+        "timed_out": false,
+        "event": null,
+        "output_excerpt": "1 passed\n",
+        "output_truncated": false
+      },
+      "differential_check": {
+        "verified": true,
+        "reasons": [
+          "reported failure matched on affected revision and test passed on fix revision"
+        ],
+        "deepest_repo_frame": {
+          "function": "invoke",
+          "line": 676,
+          "path": "src/click/testing.py"
+        }
+      }
+    }
+  ],
+  "candidate_path": "candidate.py",
+  "execution_environment": {
+    "python": "3.13.11",
+    "pytest": "8.4.2"
+  },
+  "execution_note": "Host-unsafe verification run; Docker daemon was unavailable. This does not demonstrate container isolation."
+}
