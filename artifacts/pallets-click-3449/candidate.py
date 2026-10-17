@@ -1,11 +1,13 @@
-from click import command, echo_via_pager
+import click
 from click.testing import CliRunner
 
 
-def test_echo_via_pager_does_not_close_borrowed_stdout():
-    @command()
+def test_echo_via_pager():
+    @click.command()
     def cli():
-        echo_via_pager("Hello, Click!")
+        click.echo_via_pager("Hello, Click!")
 
-    result = CliRunner().invoke(cli)
+    runner = CliRunner()
+    result = runner.invoke(cli)
     assert result.exit_code == 0
+    assert "Hello, Click!" in result.output

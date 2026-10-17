@@ -5,11 +5,20 @@ from __future__ import annotations
 import json
 import os
 import re
+import ssl
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 from .verifier import validate_test_source
+
+
+def _ssl_context() -> ssl.SSLContext:
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        return ssl.create_default_context()
 
 
 def generate_test(
@@ -37,7 +46,7 @@ def build_prompt(case: dict, repo_path: Path, feedback: str | None = None) -> st
         path = (repo_path / entry).resolve()
         if not path.is_relative_to(repo_path.resolve()) or not path.is_file():
             continue
-        text = path.read_text(encoding="utf-8", errors="replace")[:12000]
+        text = path.read_text(encoding="utf-8", errors="replace")[:3500]
         excerpts.append(f"--- {entry} ---\n{text}")
 
     return f"""You generate a regression test for an open-source Python bug.
@@ -75,7 +84,7 @@ def _generate_gemini(prompt: str) -> str:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("Set GEMINI_API_KEY to generate a candidate with Gemma.")
-    model = os.environ.get("REPROFORGE_GEMMA_MODEL", "gemma-4-31b-it")
+    model = os.environ.get("REPROFORGE_GEMMA_MODEL", "gemma-4-26b-a4b-it")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     request = urllib.request.Request(
@@ -85,7 +94,7 @@ def _generate_gemini(prompt: str) -> str:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=90) as response:
+        with urllib.request.urlopen(request, timeout=120, context=_ssl_context()) as response:
             body = json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError) as exc:
         raise RuntimeError(f"Gemini API request failed: {exc}") from exc
@@ -113,7 +122,7 @@ def _generate_digitalocean(prompt: str) -> str:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=90) as response:
+        with urllib.request.urlopen(request, timeout=90, context=_ssl_context()) as response:
             body = json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError) as exc:
         raise RuntimeError(f"DigitalOcean Inference request failed: {exc}") from exc
@@ -124,5 +133,7 @@ def _generate_digitalocean(prompt: str) -> str:
 
 
 def _extract_python(text: str) -> str:
-    match = re.search(r"```(?:python)?\s*\n(.*?)```", text, flags=re.DOTALL | re.IGNORECASE)
-    return match.group(1).strip() if match else text.strip()
+    matches = re.findall(r"```(?:python)?\s*\n(.*?)```", text, flags=re.DOTALL | re.IGNORECASE)
+    if matches:
+        return matches[-1].strip()
+    return text.strip()
