@@ -26,7 +26,7 @@ def main() -> None:
     run.add_argument("--candidate", type=Path, help="use a reviewed test file instead of calling a model")
     run.add_argument("--model-backend", choices=("gemini", "digitalocean"), default="gemini")
     run.add_argument("--backend", choices=("docker", "host-unsafe"), default="docker")
-    run.add_argument("--worker-image", default="reproforge-worker:py313")
+    run.add_argument("--worker-image", default=None, help="Docker worker image name; defaults to manifest worker_image or reproforge-worker:py313")
     run.add_argument("--max-attempts", type=int, default=3)
     run.add_argument("--output-dir", type=Path, default=Path("artifacts"))
     run.set_defaults(handler=_run)
@@ -45,6 +45,7 @@ def _run(args: argparse.Namespace) -> None:
     repo_url = args.repo_url or case["repository_url"]
     affected_ref = case["affected_ref"]
     fixed_ref = case["fixed_ref"]
+    worker_image = args.worker_image or case.get("worker_image") or "reproforge-worker:py313"
     out_dir = args.output_dir.resolve() / case["case_id"]
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -70,6 +71,8 @@ def _run(args: argparse.Namespace) -> None:
         fixed = temp_root / "fixed"
         _git(["-C", str(clone), "worktree", "add", "--quiet", "--detach", str(affected), affected_ref])
         _git(["-C", str(clone), "worktree", "add", "--quiet", "--detach", str(fixed), fixed_ref])
+        affected_commit = _git_output(["-C", str(affected), "rev-parse", "HEAD"])
+        fixed_commit = _git_output(["-C", str(fixed), "rev-parse", "HEAD"])
 
         attempt_limit = 1 if source is not None else max(1, min(args.max_attempts, 3))
         for attempt_no in range(1, attempt_limit + 1):
@@ -86,7 +89,7 @@ def _run(args: argparse.Namespace) -> None:
             start = time.monotonic()
             affected_result = run_candidate(
                 affected, candidate_path, case.get("import_paths", []),
-                backend=args.backend, image=args.worker_image,
+                backend=args.backend, image=worker_image,
             )
             affected_result["duration_seconds"] = round(time.monotonic() - start, 3)
             failure_check = verify_failure(
@@ -97,7 +100,7 @@ def _run(args: argparse.Namespace) -> None:
 
             fixed_result = run_candidate(
                 fixed, candidate_path, case.get("import_paths", []),
-                backend=args.backend, image=args.worker_image,
+                backend=args.backend, image=worker_image,
             )
             differential = verify_differential(
                 affected_result.get("event"),
@@ -131,9 +134,12 @@ def _run(args: argparse.Namespace) -> None:
         "repository_url": case.get("repository_url", repo_url),
         "repository_source_override": repo_url if repo_url != case.get("repository_url") else None,
         "affected_ref": affected_ref,
+        "affected_commit": affected_commit,
         "fixed_ref": fixed_ref,
+        "fixed_commit": fixed_commit,
         "model_backend": args.model_backend if candidate_is_model_generated else "manual-candidate",
         "execution_backend": args.backend,
+        "worker_image": worker_image if args.backend == "docker" else None,
         "model_generated_candidate": candidate_is_model_generated,
         "status": status,
         "attempts": history,
@@ -150,6 +156,14 @@ def _git(args: list[str]) -> None:
     if result.returncode:
         detail = result.stderr.strip() or result.stdout.strip()
         raise RuntimeError(f"git command failed ({result.returncode}): {detail}")
+
+
+def _git_output(args: list[str]) -> str:
+    result = subprocess.run(["git", *args], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    if result.returncode:
+        detail = result.stderr.strip() or result.stdout.strip()
+        raise RuntimeError(f"git command failed ({result.returncode}): {detail}")
+    return result.stdout.strip()
 
 
 def _public_worker_result(result: dict[str, Any]) -> dict[str, Any]:

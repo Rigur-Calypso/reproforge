@@ -4,9 +4,12 @@
   "repository_url": "https://github.com/pallets/click.git",
   "repository_source_override": null,
   "affected_ref": "8.1.7",
+  "affected_commit": "874ca2bc1c30d93a4ac6e36a15ed685eafe89097",
   "fixed_ref": "8.3.3",
+  "fixed_commit": "c06d2d0a6aee6bcc50bd8257be2a4a592f4e75d0",
   "model_backend": "gemini",
-  "execution_backend": "host-unsafe",
+  "execution_backend": "docker",
+  "worker_image": "reproforge-worker:py313",
   "model_generated_candidate": true,
   "status": "differentially_verified",
   "attempts": [
@@ -63,6 +66,26 @@
               "function": "pytest_runtest_call",
               "line": 900,
               "path": "site-packages/_pytest/capture.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "run_old_style_hookwrapper",
+              "line": 64,
+              "path": "site-packages/pluggy/_execution.py"
+            },
+            {
+              "function": "get_result",
+              "line": 103,
+              "path": "site-packages/pluggy/_result.py"
+            },
+            {
+              "function": "run_old_style_hookwrapper",
+              "line": 49,
+              "path": "site-packages/pluggy/_execution.py"
             },
             {
               "function": "_multicall",
@@ -147,9 +170,9 @@
           ],
           "exit_code": 1
         },
-        "duration_seconds": 0.192,
-        "output_excerpt": "REPROFORGE_EVENT={\"exception_message\": \"fileno\", \"exception_type\": \"UnsupportedOperation\", \"frames\": [{\"function\": \"from_call\", \"line\": 344, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"<lambda>\", \"line\": 246, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 850, \"path\": \"site-packages/_pytest/logging.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 900, \"path\": \"site-packages/_pytest/capture.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 263, \"path\": \"site-packages/_pytest/skipping.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 178, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"runtest\", \"line\": 1671, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_pyfunc_call\", \"line\": 157, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"test_clirunner_faulthandler\", \"line\": 15, \"path\": \"candidate/test_reproduction.py\"}, {\"function\": \"invoke\", \"line\": 408, \"path\": \"src/click/testing.py\"}, {\"function\": \"main\", \"line\": 1078, \"path\": \"src/click/core.py\"}, {\"function\": \"invoke\", \"line\": 1434, \"path\": \"src/click/core.py\"}, {\"function\": \"invoke\", \"line\": 783, \"path\": \"src/click/core.py\"}, {\"function\": \"cli\", \"line\": 10, \"path\": \"candidate/test_reproduction.py\"}]}\nF                                                                        [100%]\n=================================== FAILURES ===================================\n_________________________ test_clirunner_faulthandler __________________________\n\n    def test_clirunner_faulthandler():\n        @click.command()\n        def cli():\n            faulthandler.enable()\n            click.echo(\"ok\")\n    \n        runner = CliRunner()\n        try:\n>           result = runner.invoke(cli, catch_exceptions=False)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n<workspace>/Desktop/MLH Event - My college/artifacts/pallets-click-2865/candidate.py:15: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/click/testing.py:408: in invoke\n    return_value = cli.main(args=args or (), prog_name=prog_name, **extra)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/click/core.py:1078: in main\n    rv = self.invoke(ctx)\n         ^^^^^^^^^^^^^^^^\nsrc/click/core.py:1434: in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/click/core.py:783: in invoke\n    return __callback(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @click.command()\n    def cli():\n>       faulthandler.enable()\nE       io.UnsupportedOperation: fileno\n\n<workspace>/Desktop/MLH Event - My college/artifacts/pallets-click-2865/candidate.py:10: UnsupportedOperation\n=========================== short test summary info ============================\nFAILED ../../../../../../../..<workspace>/Desktop/MLH Event - My college/artifacts/pallets-click-2865/candidate.py::test_clirunner_faulthandler\n1 failed in 0.05s\n",
-        "output_truncated": false
+        "duration_seconds": 0.308,
+        "output_excerpt": "<lambda>\", \"line\": 246, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 850, \"path\": \"site-packages/_pytest/logging.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 900, \"path\": \"site-packages/_pytest/capture.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"run_old_style_hookwrapper\", \"line\": 64, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"get_result\", \"line\": 103, \"path\": \"site-packages/pluggy/_result.py\"}, {\"function\": \"run_old_style_hookwrapper\", \"line\": 49, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 263, \"path\": \"site-packages/_pytest/skipping.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 178, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"runtest\", \"line\": 1671, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"__call__\", \"line\": 197, \"path\": \"site-packages/pluggy/_caller.py\"}, {\"function\": \"_hookexec\", \"line\": 183, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 195, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"_multicall\", \"line\": 147, \"path\": \"site-packages/pluggy/_execution.py\"}, {\"function\": \"pytest_pyfunc_call\", \"line\": 157, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"test_clirunner_faulthandler\", \"line\": 15, \"path\": \"candidate/test_reproduction.py\"}, {\"function\": \"invoke\", \"line\": 408, \"path\": \"src/click/testing.py\"}, {\"function\": \"main\", \"line\": 1078, \"path\": \"src/click/core.py\"}, {\"function\": \"invoke\", \"line\": 1434, \"path\": \"src/click/core.py\"}, {\"function\": \"invoke\", \"line\": 783, \"path\": \"src/click/core.py\"}, {\"function\": \"cli\", \"line\": 10, \"path\": \"candidate/test_reproduction.py\"}]}\nF                                                                        [100%]\n=================================== FAILURES ===================================\n_________________________ test_clirunner_faulthandler __________________________\n\n    def test_clirunner_faulthandler():\n        @click.command()\n        def cli():\n            faulthandler.enable()\n            click.echo(\"ok\")\n    \n        runner = CliRunner()\n        try:\n>           result = runner.invoke(cli, catch_exceptions=False)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n/candidate/test_reproduction.py:15: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/click/testing.py:408: in invoke\n    return_value = cli.main(args=args or (), prog_name=prog_name, **extra)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/click/core.py:1078: in main\n    rv = self.invoke(ctx)\n         ^^^^^^^^^^^^^^^^\nsrc/click/core.py:1434: in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/click/core.py:783: in invoke\n    return __callback(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @click.command()\n    def cli():\n>       faulthandler.enable()\nE       io.UnsupportedOperation: fileno\n\n/candidate/test_reproduction.py:10: UnsupportedOperation\n=========================== short test summary info ============================\nFAILED ../candidate/test_reproduction.py::test_clirunner_faulthandler - io.Un...\n1 failed in 0.05s\n",
+        "output_truncated": true
       },
       "affected_signature_check": {
         "verified": true,

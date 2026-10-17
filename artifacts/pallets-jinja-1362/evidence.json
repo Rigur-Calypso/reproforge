@@ -1,0 +1,242 @@
+{
+  "case_id": "pallets-jinja-1362",
+  "issue_url": "https://github.com/pallets/jinja/issues/1362",
+  "repository_url": "https://github.com/pallets/jinja.git",
+  "repository_source_override": null,
+  "affected_ref": "2.11.3",
+  "affected_commit": "cf215390d4a4d6f0a4de27e2687eed176878f13d",
+  "fixed_ref": "59de6fbde98de6719758b773a77f0559756756b5",
+  "fixed_commit": "59de6fbde98de6719758b773a77f0559756756b5",
+  "model_backend": "manual-candidate",
+  "execution_backend": "docker",
+  "worker_image": "reproforge-worker:py38",
+  "model_generated_candidate": false,
+  "status": "differentially_verified",
+  "attempts": [
+    {
+      "attempt": 1,
+      "affected": {
+        "exit_code": 1,
+        "timed_out": false,
+        "event": {
+          "exception_message": "sequence item 0: expected str instance, list found",
+          "exception_type": "TypeError",
+          "frames": [
+            {
+              "function": "from_call",
+              "line": 342,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "<lambda>",
+              "line": 263,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "__call__",
+              "line": 513,
+              "path": "site-packages/pluggy/_hooks.py"
+            },
+            {
+              "function": "_hookexec",
+              "line": 120,
+              "path": "site-packages/pluggy/_manager.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 182,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "get_result",
+              "line": 100,
+              "path": "site-packages/pluggy/_result.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 87,
+              "path": "site-packages/_pytest/threadexception.py"
+            },
+            {
+              "function": "thread_exception_runtest_hook",
+              "line": 63,
+              "path": "site-packages/_pytest/threadexception.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 90,
+              "path": "site-packages/_pytest/unraisableexception.py"
+            },
+            {
+              "function": "unraisable_exception_runtest_hook",
+              "line": 65,
+              "path": "site-packages/_pytest/unraisableexception.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 839,
+              "path": "site-packages/_pytest/logging.py"
+            },
+            {
+              "function": "_runtest_for",
+              "line": 822,
+              "path": "site-packages/_pytest/logging.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 882,
+              "path": "site-packages/_pytest/capture.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 167,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 256,
+              "path": "site-packages/_pytest/skipping.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 103,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 178,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "pytest_runtest_call",
+              "line": 170,
+              "path": "site-packages/_pytest/runner.py"
+            },
+            {
+              "function": "runtest",
+              "line": 1831,
+              "path": "site-packages/_pytest/python.py"
+            },
+            {
+              "function": "__call__",
+              "line": 513,
+              "path": "site-packages/pluggy/_hooks.py"
+            },
+            {
+              "function": "_hookexec",
+              "line": 120,
+              "path": "site-packages/pluggy/_manager.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 139,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "_multicall",
+              "line": 103,
+              "path": "site-packages/pluggy/_callers.py"
+            },
+            {
+              "function": "pytest_pyfunc_call",
+              "line": 194,
+              "path": "site-packages/_pytest/python.py"
+            },
+            {
+              "function": "test_native_environment_render_async_list",
+              "line": 12,
+              "path": "candidate/test_reproduction.py"
+            },
+            {
+              "function": "run",
+              "line": 44,
+              "path": "runners.py"
+            },
+            {
+              "function": "run_until_complete",
+              "line": 616,
+              "path": "base_events.py"
+            },
+            {
+              "function": "render",
+              "line": 10,
+              "path": "candidate/test_reproduction.py"
+            },
+            {
+              "function": "render_async",
+              "line": 65,
+              "path": "src/jinja2/asyncsupport.py"
+            },
+            {
+              "function": "handle_exception",
+              "line": 832,
+              "path": "src/jinja2/environment.py"
+            },
+            {
+              "function": "reraise",
+              "line": 28,
+              "path": "src/jinja2/_compat.py"
+            },
+            {
+              "function": "concat_async",
+              "line": 26,
+              "path": "src/jinja2/asyncsupport.py"
+            }
+          ],
+          "exit_code": 1
+        },
+        "duration_seconds": 0.347,
+        "output_excerpt": "ages/_pytest/unraisableexception.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 839, \"path\": \"site-packages/_pytest/logging.py\"}, {\"function\": \"_runtest_for\", \"line\": 822, \"path\": \"site-packages/_pytest/logging.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 882, \"path\": \"site-packages/_pytest/capture.py\"}, {\"function\": \"_multicall\", \"line\": 167, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 256, \"path\": \"site-packages/_pytest/skipping.py\"}, {\"function\": \"_multicall\", \"line\": 103, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 178, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"pytest_runtest_call\", \"line\": 170, \"path\": \"site-packages/_pytest/runner.py\"}, {\"function\": \"runtest\", \"line\": 1831, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"__call__\", \"line\": 513, \"path\": \"site-packages/pluggy/_hooks.py\"}, {\"function\": \"_hookexec\", \"line\": 120, \"path\": \"site-packages/pluggy/_manager.py\"}, {\"function\": \"_multicall\", \"line\": 139, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"_multicall\", \"line\": 103, \"path\": \"site-packages/pluggy/_callers.py\"}, {\"function\": \"pytest_pyfunc_call\", \"line\": 194, \"path\": \"site-packages/_pytest/python.py\"}, {\"function\": \"test_native_environment_render_async_list\", \"line\": 12, \"path\": \"candidate/test_reproduction.py\"}, {\"function\": \"run\", \"line\": 44, \"path\": \"runners.py\"}, {\"function\": \"run_until_complete\", \"line\": 616, \"path\": \"base_events.py\"}, {\"function\": \"render\", \"line\": 10, \"path\": \"candidate/test_reproduction.py\"}, {\"function\": \"render_async\", \"line\": 65, \"path\": \"src/jinja2/asyncsupport.py\"}, {\"function\": \"handle_exception\", \"line\": 832, \"path\": \"src/jinja2/environment.py\"}, {\"function\": \"reraise\", \"line\": 28, \"path\": \"src/jinja2/_compat.py\"}, {\"function\": \"concat_async\", \"line\": 26, \"path\": \"src/jinja2/asyncsupport.py\"}]}\nF                                                                        [100%]\n=================================== FAILURES ===================================\n__________________ test_native_environment_render_async_list ___________________\n\n    def test_native_environment_render_async_list():\n        env = NativeEnvironment(enable_async=True)\n        template = env.from_string(\"{{ items }}\")\n    \n        async def render():\n            return await template.render_async(items=[1, 2, 3, 4, 5, 6, 7, 8, 9])\n    \n>       result = asyncio.run(render())\n\n/candidate/test_reproduction.py:12: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/usr/local/lib/python3.8/asyncio/runners.py:44: in run\n    return loop.run_until_complete(main)\n/usr/local/lib/python3.8/asyncio/base_events.py:616: in run_until_complete\n    return future.result()\n/candidate/test_reproduction.py:10: in render\n    return await template.render_async(items=[1, 2, 3, 4, 5, 6, 7, 8, 9])\nsrc/jinja2/asyncsupport.py:65: in render_async\n    return self.environment.handle_exception()\nsrc/jinja2/environment.py:832: in handle_exception\n    reraise(*rewrite_traceback_stack(source=source))\nsrc/jinja2/_compat.py:28: in reraise\n    raise value.with_traceback(tb)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nasync_gen = <async_generator object root at 0xffff824d9c10>\n\n    async def concat_async(async_gen):\n        rv = []\n    \n        async def collect():\n            async for event in async_gen:\n                rv.append(event)\n    \n        await collect()\n>       return concat(rv)\nE       TypeError: sequence item 0: expected str instance, list found\n\nsrc/jinja2/asyncsupport.py:26: TypeError\n=========================== short test summary info ============================\nFAILED ../candidate/test_reproduction.py::test_native_environment_render_async_list\n1 failed in 0.06s\n",
+        "output_truncated": true
+      },
+      "affected_signature_check": {
+        "verified": true,
+        "reasons": [],
+        "deepest_repo_frame": {
+          "function": "concat_async",
+          "line": 26,
+          "path": "src/jinja2/asyncsupport.py"
+        }
+      },
+      "fixed": {
+        "exit_code": 0,
+        "timed_out": false,
+        "event": null,
+        "output_excerpt": ".                                                                        [100%]\n1 passed in 0.03s\n",
+        "output_truncated": false
+      },
+      "differential_check": {
+        "verified": true,
+        "reasons": [
+          "reported failure matched on affected revision and test passed on fix revision"
+        ],
+        "deepest_repo_frame": {
+          "function": "concat_async",
+          "line": 26,
+          "path": "src/jinja2/asyncsupport.py"
+        }
+      }
+    }
+  ],
+  "candidate_path": "candidate.py"
+}

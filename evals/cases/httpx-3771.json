@@ -16,5 +16,6 @@
   "affected_ref": "ae1b9f66238f75ced3ced5e4485408435de10768",
   "fixed_ref": "pr-3771",
   "python_version": "3.13",
+  "worker_image": "reproforge-worker:httpx",
   "fix_reference": "https://github.com/encode/httpx/pull/3771"
 }

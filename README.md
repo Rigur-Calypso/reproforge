@@ -4,13 +4,14 @@ ReproForge takes a curated Python crash report and repository case, asks Gemma t
 
 ## Current status
 
-The prototype has a runnable CLI, Gemini and DigitalOcean Inference adapters, an AST anti-cheating guard, a constrained Docker worker, a traceback verifier, a 20-test verifier integrity suite, and a curated fail-to-pass case for [Click issue #3449](https://github.com/pallets/click/issues/3449). 
+ReproForge has a runnable CLI, Gemini (Gemma) and DigitalOcean Inference adapters, an AST anti-cheating guard, constrained Docker workers, a traceback verifier, a 20-test verifier integrity suite, and a curated suite of fail-to-pass evaluation cases across distinct target environments:
 
-The pipeline has been run end-to-end with **live model generation**: the model was prompted with the issue manifest and repository context, synthesized a clean candidate `pytest` test on attempt 1, and ReproForge's deterministic verifier confirmed the differential failure-to-pass reproduction against Click 8.4.0 and the fix commit.
+1. **Click #3449 & #2865:** Model-generated tests differentially verified in isolated Docker containers (`reproforge-worker:py313`).
+2. **HTTPX #3771 (Active Open PR):** Real-time triage benchmark evaluated against an **active, unmerged GitHub Pull Request** ([`encode/httpx#3771`](https://github.com/encode/httpx/pull/3771)). Model-synthesized candidate differentially verified in isolated Docker containers (`reproforge-worker:httpx`), tracking the resolved PR commit (`55ead904eff7376ccbc7f23e93be19117c642441`).
+3. **Jinja #1362:** Multi-Python environment benchmark pinned to Python 3.8 and `MarkupSafe==1.1.1` (`reproforge-worker:py38`). Differentially verified in isolated Docker containers, confirming that async list rendering fails on Jinja 2.11.3 and passes on PR #1363.
+4. **MarkupSafe #472 (Boundary Study):** Compiled C-extension speedup crash study ([`check_markupsafe.py`](check_markupsafe.py)) demonstrating ReproForge's guardrail rejecting crashes that do not emit repository Python stack frames.
 
 Issue ingestion is currently a reviewed JSON case manifest, not an automatic GitHub issue parser. The DigitalOcean Droplet deployment is not live yet.
-
-The Click issue reports that `CliRunner.invoke` raises `ValueError: I/O operation on closed file` after `echo_via_pager` under Click 8.4, and links the merged fix in [PR #3533](https://github.com/pallets/click/pull/3533). ReproForge checks the model-generated ordinary-success test against affected Click 8.4.0 and the fix commit. Dependencies are unchanged between these revisions and are supplied by one pinned worker image.
 
 ## Quick start
 
@@ -35,7 +36,7 @@ GEMINI_API_KEY=your_key_here reproforge run \
 
 ### Running with a Pre-written Candidate
 
-Run the known issue using a checked-in test without calling a model:
+Run a known issue using a checked-in test without calling a model:
 
 ```bash
 reproforge run \
@@ -46,29 +47,48 @@ reproforge run \
 
 ### Running in Docker Container Isolation
 
-Build the isolated worker image:
+ReproForge executes tests inside disposable, unprivileged Docker containers (`--network none`, `--read-only`, `--cap-drop ALL`, `--security-opt no-new-privileges`, tmpfs `/tmp`).
+
+#### 1. Build the Worker Images
+
+Build the worker image required for your target case:
 
 ```bash
-docker build -t reproforge-worker:py313 -f worker/Dockerfile .
+# 1. Base Python 3.13 worker (for Click #3449, Click #2865)
+docker build -t reproforge-worker:py313 -f worker/Dockerfile worker
+
+# 2. Dependency-aware Python 3.13 worker (for HTTPX #3771)
+docker build -t reproforge-worker:httpx -f worker/Dockerfile.httpx worker
+
+# 3. Pinned Python 3.8 worker with MarkupSafe==1.1.1 (for Jinja 2.11.x)
+docker build -t reproforge-worker:py38 -f worker/Dockerfile.py38 worker
 ```
 
-Run the baseline test in disposable containers (no API key needed):
+#### 2. Run Verified Cases in Docker
+
+The CLI automatically inspects `worker_image` in the case manifest (or accepts `--worker-image` overrides):
 
 ```bash
-reproforge run \
-  --case evals/cases/click-3449.json \
-  --candidate evals/reproductions/click_3449.py
+# Click #3449 (uses reproforge-worker:py313)
+reproforge run --case evals/cases/click-3449.json --candidate artifacts/pallets-click-3449/candidate.py --backend docker
+
+# Click #2865 (uses reproforge-worker:py313)
+reproforge run --case evals/cases/click-2865.json --candidate artifacts/pallets-click-2865/candidate.py --backend docker
+
+# HTTPX #3771 (automatically selects reproforge-worker:httpx)
+reproforge run --case evals/cases/httpx-3771.json --candidate artifacts/encode-httpx-3771/candidate.py --backend docker
+
+# Jinja #1362 (automatically selects reproforge-worker:py38)
+reproforge run --case evals/cases/jinja-1362.json --candidate evals/reproductions/jinja_1362.py --backend docker
 ```
 
 Or run live model generation inside container isolation:
 
 ```bash
-GEMINI_API_KEY=your_key_here reproforge run --case evals/cases/click-3449.json
+GEMINI_API_KEY=your_key_here reproforge run --case evals/cases/click-3449.json --backend docker
 ```
 
-The command fetches the public Click repository, creates detached checkouts for the affected and fixed commits, executes the candidate in separate disposable containers, verifies the failure signature, and writes `artifacts/pallets-click-3449/evidence.json` and `candidate.py`.
-
-An alternate DigitalOcean Inference backend is available with `--model-backend digitalocean` and `DO_INFERENCE_API_KEY`. Host execution is available for trusted local evaluation using `--backend host-unsafe`; it is not a sandbox. The default Docker worker has networking disabled and mounts source and candidate read-only.
+An alternate DigitalOcean Inference backend is available with `--model-backend digitalocean` and `DO_INFERENCE_API_KEY`. Host execution is available for trusted local evaluation using `--backend host-unsafe`; it is not a sandbox.
 
 ## Verification & Anti-Cheating Behavior
 
@@ -84,17 +104,25 @@ A comprehensive unit test suite in `tests/test_verifier.py` (20 tests) verifies 
 
 ## Results
 
-1. **Click #3449 (Differentially Verified):** Model generated test (`test_echo_via_pager`). Failed on Click 8.4.0 with `ValueError: I/O operation on closed file.` in `src/click/testing.py:invoke` and passed on fix commit `4df304c658666f34a5ca4335ab0da15832f02f9e`.
+All evaluation cases have been executed and differentially verified in isolated Docker containers:
+
+1. **Click #3449 (Differentially Verified in Docker):** Model-generated test (`test_echo_via_pager`). Failed on Click 8.4.0 (`41f410f`) with `ValueError: I/O operation on closed file.` in `src/click/testing.py:invoke` and passed on fix commit `4df304c658666f34a5ca4335ab0da15832f02f9e`.
+   - Worker Image: `reproforge-worker:py313`
    - Artifacts: [`artifacts/pallets-click-3449/evidence.json`](artifacts/pallets-click-3449/evidence.json) and [`candidate.py`](artifacts/pallets-click-3449/candidate.py).
 
-2. **Click #2865 (Differentially Verified):** Model generated test (`test_clirunner_faulthandler`). Failed on Click 8.1.7 with `io.UnsupportedOperation: fileno` in `src/click/core.py:invoke` and passed cleanly on Click 8.3.3.
+2. **Click #2865 (Differentially Verified in Docker):** Model-generated test (`test_clirunner_faulthandler`). Failed on Click 8.1.7 (`874ca2b`) with `io.UnsupportedOperation: fileno` in `src/click/core.py:invoke` and passed cleanly on Click 8.3.3 (`c06d2d0`).
+   - Worker Image: `reproforge-worker:py313`
    - Artifacts: [`artifacts/pallets-click-2865/evidence.json`](artifacts/pallets-click-2865/evidence.json) and [`candidate.py`](artifacts/pallets-click-2865/candidate.py).
 
-3. **HTTPX #3771 (Active Open PR - Differentially Verified):** Model generated test (`test_unquote_empty_string`) evaluated against an **active, unmerged GitHub Pull Request** ([`encode/httpx#3771`](https://github.com/encode/httpx/pull/3771)). Failed on HTTPX `master` with `IndexError: string index out of range` in `httpx/_utils.py:unquote` (line 92), and passed on the open PR branch `pr-3771`.
+3. **HTTPX #3771 (Active Open PR - Differentially Verified in Docker):** Model-generated test (`test_unquote_empty_string`) evaluated against an **active, unmerged GitHub Pull Request** ([`encode/httpx#3771`](https://github.com/encode/httpx/pull/3771)). Failed on HTTPX `master` (`ae1b9f6`) with `IndexError: string index out of range` in `httpx/_utils.py:unquote` (line 92), and passed on open PR branch `pr-3771` (pinned resolved commit `55ead904eff7376ccbc7f23e93be19117c642441`).
+   - Worker Image: `reproforge-worker:httpx`
    - Artifacts: [`artifacts/encode-httpx-3771/evidence.json`](artifacts/encode-httpx-3771/evidence.json) and [`candidate.py`](artifacts/encode-httpx-3771/candidate.py).
-   - Significance: Demonstrates that ReproForge evaluates real-time, unmerged pull requests in active open-source triage before they are merged.
+   - Significance: Benchmarks real-time triage against unmerged code before upstream release.
 
-4. **Execution Environment Note:** These runs used `host-unsafe` because Docker Desktop was unavailable on the evaluation workstation. The Docker container isolation configuration (`--network none`, `--read-only`, dropped capabilities) is provided in `worker/` and `runner.py`.
+4. **Jinja #1362 (Differentially Verified in Docker):** Reproducer (`test_native_environment_render_async_list`). Failed on Jinja 2.11.3 (`cf21539`) with `TypeError: sequence item 0: expected str instance, list found` in `src/jinja2/asyncsupport.py:concat_async` and passed cleanly on fix commit `59de6fbde98de6719758b773a77f0559756756b5`.
+   - Worker Image: `reproforge-worker:py38`
+   - Artifacts: [`artifacts/pallets-jinja-1362/evidence.json`](artifacts/pallets-jinja-1362/evidence.json) and [`candidate.py`](artifacts/pallets-jinja-1362/candidate.py).
+   - Significance: Demonstrates multi-Python version pinning for legacy dependency stacks.
 
 ## Curated Evaluation Cases
 
@@ -104,25 +132,25 @@ ReproForge benchmarks differential reproduction across distinct environments:
    - **Target:** Pallets Click (8.4.0 vs fix commit `4df304c`)
    - **Environment:** Python 3.13 (`reproforge-worker:py313`)
    - **Failure signature:** `ValueError: I/O operation on closed file.` in `src/click/testing.py:invoke`
-   - **Status:** Synthesized by model on attempt 1 and differentially verified (`artifacts/pallets-click-3449/`).
+   - **Status:** Synthesized by model on attempt 1, differentially verified in Docker (`artifacts/pallets-click-3449/`).
 
 2. **Click #2865 ([`evals/cases/click-2865.json`](evals/cases/click-2865.json)):**
    - **Target:** Pallets Click (8.1.7 vs fix release `8.3.3`, PR #3244)
    - **Environment:** Python 3.13 (`reproforge-worker:py313`)
    - **Failure signature:** `io.UnsupportedOperation: fileno` in `src/click/core.py:invoke`
-   - **Status:** Synthesized by model on attempt 1 and differentially verified (`artifacts/pallets-click-2865/`).
+   - **Status:** Synthesized by model on attempt 1, differentially verified in Docker (`artifacts/pallets-click-2865/`).
 
 3. **HTTPX #3771 ([`evals/cases/httpx-3771.json`](evals/cases/httpx-3771.json)):**
    - **Target:** Encode HTTPX (`master` vs **active unmerged PR #3771**)
-   - **Environment:** Python 3.13 (`reproforge-worker:py313`)
+   - **Environment:** Python 3.13 (`reproforge-worker:httpx`)
    - **Failure signature:** `IndexError: string index out of range` in `httpx/_utils.py:unquote`
-   - **Status:** Synthesized by model on attempt 1 and differentially verified (`artifacts/encode-httpx-3771/`).
+   - **Status:** Synthesized by model on attempt 1, differentially verified in Docker (`artifacts/encode-httpx-3771/`).
 
 4. **Jinja #1362 ([`evals/cases/jinja-1362.json`](evals/cases/jinja-1362.json)):**
    - **Target:** Pallets Jinja (2.11.3 vs fix PR #1363, commit `59de6fb`)
-   - **Environment:** Python 3.8 (`worker/Dockerfile.py38`), pinned `MarkupSafe==1.1.1`
-   - **Failure signature:** `TypeError: sequence item 0: expected str instance, list found` in `jinja2/asyncsupport.py:concat_async`
-   - **Reproducer:** [`evals/reproductions/jinja_1362.py`](evals/reproductions/jinja_1362.py)
+   - **Environment:** Python 3.8 (`worker/Dockerfile.py38`), pinned `MarkupSafe==1.1.1` (`reproforge-worker:py38`)
+   - **Failure signature:** `TypeError: sequence item 0: expected str instance, list found` in `src/jinja2/asyncsupport.py:concat_async`
+   - **Status:** Differentially verified in Docker (`artifacts/pallets-jinja-1362/`).
    - **Significance:** Demonstrates ReproForge's environment pinning requirements—older Jinja releases rely on APIs removed in modern Python/MarkupSafe.
 
 5. **MarkupSafe #472 ([`check_markupsafe.py`](check_markupsafe.py) - Boundary Study):**
