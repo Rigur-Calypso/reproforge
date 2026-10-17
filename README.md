@@ -157,13 +157,70 @@ ReproForge benchmarks differential reproduction across distinct environments:
    - **Target:** Pallets MarkupSafe (3.0.1 vs 3.0.2)
    - **Significance:** Demonstrates the verifier's strict repository-frame guardrail. Because the crash occurs inside compiled C code (`_speedups.c`) without emitting a Python frame, ReproForge's verifier refuses to certify it, highlighting the boundary of pure-Python traceback analysis.
 
-## DigitalOcean
+## Cloud Server Deployment (DigitalOcean)
 
-The worker is designed to run in a disposable container on a DigitalOcean Droplet. The deployment is not complete yet. Model calls run from the orchestrator, using either Gemini or the optional DigitalOcean Inference endpoint.
+ReproForge can be deployed as an autonomous reproduction server on any Ubuntu cloud VM or **DigitalOcean Droplet**.
+
+### Automated Bootstrap via DigitalOcean User Data (cloud-init)
+When creating a Droplet in the DigitalOcean control panel (Ubuntu 22.04 or 24.04 LTS), expand **Advanced Options** $\rightarrow$ **Add User Data**, and paste the contents of [`deploy/cloud-init.yaml`](deploy/cloud-init.yaml). 
+
+The Droplet will automatically:
+1. Install Docker Engine and Python 3.11+.
+2. Clone ReproForge and build the three worker images (`reproforge-worker:py313`, `reproforge-worker:httpx`, `reproforge-worker:py38`).
+3. Register and enable the `reproforge.service` systemd daemon.
+4. Start the HTTP API server on port 8080.
+
+### Manual Setup on an Existing Droplet or VM
+
+On any fresh Ubuntu/Debian server, run:
+
+```bash
+git clone https://github.com/Rigur-Calypso/reproforge.git /opt/reproforge
+sudo /opt/reproforge/deploy/setup_server.sh
+```
+
+### Running the Server Locally or Headlessly
+
+You can also run the server directly using the CLI:
+
+```bash
+reproforge serve --host 0.0.0.0 --port 8080
+```
+
+### Remote HTTP API Endpoints
+
+Once running, the server exposes endpoints for automated triage:
+
+1. **Health Check:**
+   ```bash
+   curl http://<SERVER_IP>:8080/health
+   ```
+   *Response:* `{"status": "healthy", "service": "reproforge", "docker_available": true}`
+
+2. **List Curated Cases:**
+   ```bash
+   curl http://<SERVER_IP>:8080/cases
+   ```
+
+3. **Trigger Remote Reproduction:**
+   ```bash
+   curl -X POST http://<SERVER_IP>:8080/run \
+     -H "Content-Type: application/json" \
+     -d '{"case_id": "encode-httpx-3771", "candidate": "artifacts/encode-httpx-3771/candidate.py", "backend": "docker"}'
+   ```
+   *Response:* The complete, structured `evidence.json` produced by the isolated Docker container.
+
+4. **Retrieve Stored Evidence Report:**
+   ```bash
+   curl http://<SERVER_IP>:8080/evidence/encode-httpx-3771
+   ```
 
 ## Project documents
 
 - [Architecture and reproduction workflow](docs/design.md)
+- [Server systemd service configuration](deploy/reproforge.service)
+- [Server automated setup script](deploy/setup_server.sh)
+- [DigitalOcean Droplet cloud-init bootstrap](deploy/cloud-init.yaml)
 - [Click issue #3449 case manifest](evals/cases/click-3449.json)
 - [Click issue #2865 case manifest](evals/cases/click-2865.json)
 - [HTTPX PR #3771 case manifest](evals/cases/httpx-3771.json)

@@ -31,6 +31,11 @@ def main() -> None:
     run.add_argument("--output-dir", type=Path, default=Path("artifacts"))
     run.set_defaults(handler=_run)
 
+    serve = subparsers.add_parser("serve", help="run HTTP API server for remote reproduction requests")
+    serve.add_argument("--host", default="0.0.0.0", help="host address to bind (default: 0.0.0.0)")
+    serve.add_argument("--port", type=int, default=8080, help="port to bind (default: 8080)")
+    serve.set_defaults(handler=_serve)
+
     args = parser.parse_args()
     try:
         args.handler(args)
@@ -184,6 +189,11 @@ def _feedback(record: dict[str, Any]) -> str:
         "fixed_output": record["fixed"].get("output_excerpt", "")[-1500:],
         "differential_check": record["differential_check"],
     }, indent=2)
+
+
+def _serve(args: argparse.Namespace) -> None:
+    from .server import run_server
+    run_server(host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
