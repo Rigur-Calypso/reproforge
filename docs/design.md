@@ -228,7 +228,7 @@ Prioritize a working narrow loop:
 
 The live demo should use a curated issue with clear evidence, not an arbitrary issue selected on stage. A strong demo shows one failed attempt, the feedback loop, a repository-frame match, and the final test. Do not stage fabricated evaluation results or imply that a one-case demo proves general reliability.
 
-## Evaluation plan
+## Evaluation plan and case studies
 
 Start with one known issue/fix pair, then add cases only as time allows. Each case records:
 
@@ -238,7 +238,9 @@ Start with one known issue/fix pair, then add cases only as time allows. Each ca
 - Human-reviewed reference reproduction.
 - ReproForge result and whether the test has a fail-to-pass outcome.
 
-Report counts plainly, for example: “Differentially reproduced 2 of 3 curated issues; one setup failure; zero false verified results in this set.” Do not generalize from a tiny benchmark. Track false verified results as the highest priority metric; if one occurs, fix the verifier before making a verification claim.
+### Case Studies & Boundaries
+1. **Pallets Click #3449 (Pure Python - Verified):** Pure Python stream interaction in `CliRunner` vs `echo_via_pager`. Emits clear Python frames (`src/click/testing.py:invoke`). Fully verified through ReproForge's differential verifier.
+2. **Pallets MarkupSafe #472 (C-Extension - Boundary Study):** Subclassing `str` causes `_escape_inner` to return `NULL` without setting an exception in MarkupSafe 3.0.1 (`SystemError`), fixed in 3.0.2 (PR #477). Manually validated in `check_markupsafe.py`. Because the crash occurs inside compiled C code (`_speedups.c`), Python's traceback contains no repository `.py` frame. ReproForge's strict repository-frame rule correctly refuses this run, demonstrating a principled boundary: ReproForge targets Python-level failures rather than opaque native extensions.
 
 ## Implemented source layout and planned modules
 
