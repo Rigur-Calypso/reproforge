@@ -1,6 +1,71 @@
 # ReproForge
 
-ReproForge takes a curated Python crash report and repository case, asks Gemma to propose a candidate `pytest` test, runs it on affected and fixed revisions, and checks whether the observed failure matches the report. Gemma proposes tests; deterministic code checks the evidence.
+## System Architecture & Workflow
+
+ReproForge bridges AI intelligence with deterministic computer science: **Gemma proposes candidate tests; deterministic code running in DigitalOcean/Docker containers verifies the evidence.**
+
+```mermaid
+flowchart TD
+    subgraph INTAKE ["1. Intake & Repository Worktrees"]
+        A["GitHub Issue Report\n(Traceback, Error, Context)"] --> B["Case Manifest & Git Worktrees\n(Affected vs Fixed/PR Ref)"]
+    end
+
+    subgraph AI_LAYER ["2. AI Synthesis (Gemma)"]
+        B --> C["Bounded Model Context\n(Issue Excerpts + Target Source)"]
+        C --> D["Gemma 4 Synthesis\n(DigitalOcean GenAI Inference / Gemini)"]
+        D --> E["Candidate pytest Test\n(Normal-success assertions)"]
+    end
+
+    subgraph GUARD ["3. Static AST Guardrail"]
+        E --> F{"AST Anti-Cheating Filter"}
+        F -- "Rejected (raises / mocks / no assert)" --> D
+        F -- "Accepted Valid Syntax" --> G["Trusted Candidate Code"]
+    end
+
+    subgraph SANDBOX ["4. Execution Sandbox (DigitalOcean / Docker)"]
+        G --> H["Disposable Worker Container\n(Network: None, Read-Only FS, Dropped Caps)"]
+        H --> I["Affected Revision Run\n(Must trigger reported crash)"]
+        H --> J["Fixed / PR Revision Run\n(Must pass cleanly exit 0)"]
+    end
+
+    subgraph VERIFICATION ["5. Deterministic Verifier"]
+        I --> K{"Differential Signature Check"}
+        J --> K
+        K -- "Mismatch (attempts remain)" --> D
+        K -- "Differentially Verified" --> L["Certified Evidence Artifacts\n(evidence.json + candidate.py)"]
+    end
+
+    style D fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
+    style H fill:#0080FF,stroke:#fff,stroke-width:2px,color:#fff
+    style L fill:#0F9D58,stroke:#fff,stroke-width:2px,color:#fff
+```
+
+### How Gemma 4 & DigitalOcean Are Used
+
+1. **Gemma 4 (Model Intelligence Layer):**
+   - **Endpoint Options:** ReproForge supports **DigitalOcean Serverless GenAI Inference** running `gemma-4-31b-it` (`https://inference.do-ai.run/v1`) or the Google Gemini API.
+   - **Role:** Rather than answering questions, Gemma functions as a code synthesis engine. It reads the issue description, stack trace, and targeted source file context, and writes a minimal, idiomatic `pytest` reproduction test.
+   - **Zero Hallucination Tolerance:** Gemma is instructed to write only regular assertions—no inverted tests, no `pytest.raises`, and no mocked objects.
+
+2. **DigitalOcean (Cloud Compute & Worker Sandbox):**
+   - **Inference:** Hosted Gemma 4 models accessed via serverless API without managing GPU infrastructure.
+   - **Compute Sandbox:** Untrusted AI-generated code is dangerous to execute locally. ReproForge worker containers (`reproforge-worker:py313`, `reproforge-worker:httpx`, `reproforge-worker:py38`) are designed to run on **DigitalOcean Droplets**.
+   - **Security Boundary:** The containers enforce `--network none` (zero internet access), `--read-only` root filesystems, dropped Linux capabilities, and process/memory limits to guarantee safe execution.
+   - **Automated Cloud Bootstrap:** Includes [`deploy/cloud-init.yaml`](deploy/cloud-init.yaml) and [`deploy/setup_server.sh`](deploy/setup_server.sh) for 1-click cloud provisioning.
+
+### How ReproForge Works End-to-End
+
+1. **Target Isolation:** Clones the repository at `blob:none` and creates two isolated git worktrees: one for the affected commit/tag and one for the fixed commit or active pull request (e.g. `pull/3771/head`).
+2. **Context-Bounded Prompting:** Extracts the crash signature (exception type, error message pattern, deepest repository stack frame) and packages it with targeted repository source files into a prompt capped at 3,500 characters.
+3. **AST Anti-Cheating Validation:** Parses the candidate test into an Abstract Syntax Tree (AST). Automatically rejects cheats:
+   - Rejects `pytest.raises` (cannot invert the test to pass on the bug).
+   - Rejects explicit `raise` statements (cannot artificially cause the crash).
+   - Rejects `monkeypatch` and `unittest.mock` imports.
+   - Rejects tests lacking assertions inside test functions.
+4. **Differential Execution in Container Sandbox:**
+   - Mounts the test into a disposable Docker container running on the affected worktree. The test **must fail** with the exact exception type, message, and in the reported repository source line.
+   - Mounts the same test into a container running on the fixed/PR worktree. The test **must pass cleanly** (exit code 0).
+5. **Certified Evidence Generation:** Writes a machine-readable [`evidence.json`](artifacts/encode-httpx-3771/evidence.json) report with resolved commit SHAs, container execution times, and complete tracebacks, certifying the case as `differentially_verified`.
 
 ## Current status
 
