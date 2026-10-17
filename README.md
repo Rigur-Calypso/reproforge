@@ -68,41 +68,30 @@ All cases have been executed and **differentially verified** in isolated Docker 
 
 ## Quick Start
 
-### 1. Installation & Verifier Tests
+Get up and running in 2 minutes:
 
+### 1. Setup
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-pytest tests/ -v
+git clone https://github.com/Rigur-Calypso/reproforge.git && cd reproforge
+python3 -m venv .venv && source .venv/bin/activate && pip install -e '.[dev]'
+pytest tests/ -v   # runs the 20-test AST verifier suite
 ```
-*(All 20 verifier AST and differential integrity tests will pass in ~0.02s)*
 
-### 2. Build Container Worker Images
-
+### 2. Run a Reproduction in Docker
+Build the worker image and execute the HTTPX open PR bug inside an isolated container:
 ```bash
-docker build -t reproforge-worker:py313 -f worker/Dockerfile worker
+# Build the worker image
 docker build -t reproforge-worker:httpx -f worker/Dockerfile.httpx worker
-docker build -t reproforge-worker:py38 -f worker/Dockerfile.py38 worker
+
+# Run differential verification in Docker sandbox
+reproforge run \
+  --case evals/cases/httpx-3771.json \
+  --candidate artifacts/encode-httpx-3771/candidate.py \
+  --backend docker
 ```
 
-### 3. Run Benchmark Reproductions in Docker
-
-```bash
-# HTTPX Active Open PR (uses reproforge-worker:httpx)
-reproforge run --case evals/cases/httpx-3771.json --candidate artifacts/encode-httpx-3771/candidate.py --backend docker
-
-# Click #3449 (uses reproforge-worker:py313)
-reproforge run --case evals/cases/click-3449.json --candidate artifacts/pallets-click-3449/candidate.py --backend docker
-
-# Jinja #1362 (automatically uses reproforge-worker:py38)
-reproforge run --case evals/cases/jinja-1362.json --candidate evals/reproductions/jinja_1362.py --backend docker
-```
-
-### 4. Live Model Generation (Gemma / Gemini)
-
-To have Gemma read an issue manifest and synthesize the reproduction test live:
-
+### 3. Live AI Synthesis (Gemma)
+To have Gemma read an issue manifest and generate a new regression test live:
 ```bash
 # Using Google Gemini API:
 GEMINI_API_KEY=your_key reproforge run --case evals/cases/click-3449.json --backend docker
