@@ -113,18 +113,19 @@
 ## Slide 9: The Live PR Benchmark
 # Benchmarking an Active, Unmerged PR
 ### Proving zero data leakage on live open-source triage (`encode/httpx#3771`).
-![Live Differential Proof Terminal](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/terminal_differential_proof.png)
+![Gemma Generated PR Test in ReproForge Artifacts](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_pr_candidate_artifact.png)
 
 - **The Problem:** Historical benchmarks risk data contamination (models memorizing old, closed bugs).
 - **The Experiment:** Evaluated against an **active, open Pull Request** on HTTPX where `unquote("")` crashes.
 - **The Workflow:** ReproForge fetched `pull/3771/head:pr-3771` directly from GitHub.
-- **The Result:** Gemma synthesized a clean 2-line test:
+- **The Result (Actual Repo Artifact):** Gemma synthesized a clean 2-line test stored in `artifacts/encode-httpx-3771/candidate.py`:
   ```python
   from httpx._utils import unquote
   def test_unquote_empty_string():
       assert unquote("") == ""
   ```
 - **Differential Proof:** Crashed on `master` with `IndexError` → Passed on the unmerged PR branch with exit code 0!
+![Live Differential Proof Terminal](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/terminal_differential_proof.png)
 
 ---
 
