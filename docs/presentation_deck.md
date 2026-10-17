@@ -1,14 +1,14 @@
-# ReproForge Presentation Deck
+# ReproForge Presentation Deck (10 Slides — Gamma Free Tier Optimized)
 
 > **Prompt for Gamma (gamma.app):**
-> "Create a modern, sleek, high-tech presentation deck based on the following slide-by-slide content for an AI developer tooling project called ReproForge. Prominently highlight that ReproForge is powered by both Google Gemma and DigitalOcean. Include the embedded images and diagrams on their respective cards. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
+> "Generate a 10-card presentation (1 title/intro card + exactly 9 content slides to fit Gamma's 10-card free tier limit). Topic: ReproForge — Autonomous AI Bug Reproduction & Zero-Trust Regression Verification. Prominently highlight that ReproForge is powered by both Google Gemma and DigitalOcean. Include the embedded screenshots and diagrams on their respective cards. Use dark mode aesthetics, clean developer-focused cards, minimal typography, and clear visual hierarchy."
 
 ---
 
-## Slide 1: Title Slide
+## Slide 1: Title Slide (Intro)
 # ReproForge
 ### Autonomous AI Bug Reproduction & Zero-Trust Regression Verification
-#### Powered by Google Gemma & DigitalOcean
+#### Powered by Google Gemma & DigitalOcean Cloud Infrastructure
 ![ReproForge GitHub Repository](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_repo_overview.png)
 - **Core Philosophy:** Gemma proposes candidate tests; DigitalOcean container sandboxes decide the verdict.
 - **Presenter:** Hackathon Team
@@ -70,31 +70,18 @@
 
 ---
 
-## Slide 6: The Anti-Cheating Engine
-# Compiler-Level AST Validation
-### Why string search fails and why compiler analysis is required.
-- **No `pytest.raises`:** Rejects attempts to catch the crash to simulate false passes.
-- **No Manual `raise`:** Rejects candidates where the model artificially triggers the exception.
-- **No `mock` or `monkeypatch`:** Rejects test-time faking of internal library methods.
-- **Function-Scoped Assertions:** Enforces real, active assertion nodes inside test functions.
-- **Integrity Test Suite:** 20 comprehensive unit tests in `tests/test_verifier.py` validating all rejection rules.
+## Slide 6: Defense-in-Depth Security
+# AST Anti-Cheating & DigitalOcean Sandboxing
+### Stopping model hallucinations at the compiler level and host threats at the container level.
+- **AST Rule 1: No `pytest.raises`:** Rejects attempts to catch the crash to simulate false passes.
+- **AST Rule 2: No Manual `raise`:** Rejects candidates where the model artificially triggers the exception.
+- **AST Rule 3: No `mock` or `monkeypatch`:** Rejects test-time faking of internal library methods.
+- **AST Rule 4: Active Assertions:** Enforces real, active assertion nodes inside test functions (20 unit tests verified in `tests/test_verifier.py`).
+- **DigitalOcean Container Isolation:** Disposable workers run with `--network none` (no exfiltration), `--read-only` root fs, dropped root caps (`--cap-drop ALL`), and bounded memory/CPU.
 
 ---
 
-## Slide 7: Security & Sandboxing
-# Isolated Container Execution on DigitalOcean
-### Executing untrusted AI code safely without compromising host machines.
-![ReproForge GitHub Repository](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_repo_overview.png)
-
-- **Networkless Execution:** Containers run with `--network none` (zero internet access; cannot exfiltrate secrets).
-- **Read-Only Root Filesystem:** Prevents malware installation, disk wiping, or backdoors.
-- **Dropped Capabilities:** Drops all Linux root privileges (`--cap-drop ALL`, `--security-opt no-new-privileges`).
-- **Resource Constraints:** Strictly bounded CPU (1 core), memory (512MB), and process count (pids limit 128).
-- **Multi-Python Workers:** Dedicated images for Python 3.13 (`reproforge-worker:py313`), HTTPX (`reproforge-worker:httpx`), and legacy Python 3.8 (`reproforge-worker:py38`).
-
----
-
-## Slide 8: Real-World Benchmark Results
+## Slide 7: Real-World Benchmark Results
 # Proven Across Real Open-Source Libraries
 ### Verified in isolated containers across diverse repositories.
 ![ReproForge Verified Benchmark Suite](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/benchmark_scorecard.png)
@@ -110,7 +97,7 @@
 
 ---
 
-## Slide 9: The Live PR Benchmark
+## Slide 8: The Live PR Benchmark
 # Benchmarking an Active, Unmerged PR
 ### Proving zero data leakage on live open-source triage (`encode/httpx#3771`).
 ![Gemma Generated PR Test in ReproForge Artifacts](https://raw.githubusercontent.com/Rigur-Calypso/reproforge/main/docs/images/github_pr_candidate_artifact.png)
@@ -129,7 +116,7 @@
 
 ---
 
-## Slide 10: Real-World Impact
+## Slide 9: Real-World Impact & Workflow
 # Who Uses ReproForge?
 - **Open-Source Maintainers:** Drops verified regression tests directly into their repository's `tests/` folder.
 - **CI/CD & GitHub Actions:** Automated bot comments verified reproduction tests on new issues with zero human effort.
@@ -138,7 +125,7 @@
 
 ---
 
-## Slide 11: Summary & Conclusion
+## Slide 10: Summary & Conclusion
 # ReproForge
 ### Autonomous, Evidence-Backed Bug Triage for Python
 #### Combining Google Gemma Intelligence with DigitalOcean Cloud Compute
